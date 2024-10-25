@@ -65,6 +65,9 @@ const config: Config = {
       space: {
         7.5: "30px",
       },
+      gap: {
+        7.5: "30px",
+      },
       keyframes: {
         "caret-blink": {
           "0%,70%,100%": { opacity: "1" },

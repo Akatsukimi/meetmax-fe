@@ -74,8 +74,13 @@ body {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-medium;
+    @apply h-full bg-background text-foreground font-medium;
   }
+}
+
+html,
+#root {
+  height: 100%;
 }
 
 .rdp-vhidden {

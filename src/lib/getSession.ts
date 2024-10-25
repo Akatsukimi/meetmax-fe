@@ -1,4 +1,9 @@
 import { cache } from "react";
 import { cookies } from "next/headers";
 
-export default cache(() => cookies().get("user")?.value);
+import { User } from "@/types";
+
+export default cache((): User | null => {
+  const userCookie = cookies().get("user")?.value;
+  return userCookie ? (JSON.parse(userCookie) as User) : null;
+});

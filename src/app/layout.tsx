@@ -14,7 +14,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "Meetmax App",
+  title: "Meetmax",
   description: "Social media app",
 };
 
