@@ -39,13 +39,19 @@ const Navbar = () => {
         </Button>
         <div className='hidden sm:flex items-center gap-5'>
           <span>{user?.username}</span>
-          <Image
-            src={Logo}
-            width={42}
-            height={42}
-            alt='logo'
-            className='object-cover rounded overflow-hidden flex-shrink'
-          />
+          {user?.avatar ? (
+            <Image
+              src={Logo}
+              width={42}
+              height={42}
+              alt='logo'
+              className='object-cover rounded overflow-hidden flex-shrink'
+            />
+          ) : (
+            <div className='bg-primary size-10 flex items-center justify-center rounded text-white'>
+              {user?.username.charAt(0).toUpperCase()}
+            </div>
+          )}
         </div>
       </div>
     </header>
