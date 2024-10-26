@@ -5,7 +5,7 @@ import { z } from "zod";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { CalendarIcon } from "lucide-react";
+import { AtSign, CalendarIcon, CircleUser, Lock } from "lucide-react";
 import { IoMale, IoFemale } from "react-icons/io5";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -30,6 +30,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { signup } from "@/services/auth";
 import toast from "react-hot-toast";
+import { PasswordInput } from "@/components/ui/password-input";
 
 const SignupForm = () => {
   const navigate = useRouter();
@@ -60,16 +61,22 @@ const SignupForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-7.5'>
-        <div className='space-y-5'>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-7.5">
+        <div className="space-y-5">
           <FormField
             control={form.control}
-            name='email'
+            name="email"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder='Your Email' {...field} />
+                  <Input
+                    icon={AtSign}
+                    placeholder="Your Email"
+                    className="pl-10"
+                    disabled={form.formState.isSubmitting}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -77,12 +84,18 @@ const SignupForm = () => {
           />
           <FormField
             control={form.control}
-            name='username'
+            name="username"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Username</FormLabel>
                 <FormControl>
-                  <Input placeholder='Username' {...field} />
+                  <Input
+                    icon={CircleUser}
+                    placeholder="Username"
+                    className="pl-10"
+                    disabled={form.formState.isSubmitting}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -90,34 +103,40 @@ const SignupForm = () => {
           />
           <FormField
             control={form.control}
-            name='password'
+            name="password"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type='password' placeholder='password' {...field} />
+                  <PasswordInput
+                    icon={Lock}
+                    placeholder="Your Password"
+                    className="pl-10"
+                    disabled={form.formState.isSubmitting}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <div className='grid grid-cols-2 gap-5'>
+          <div className="grid grid-cols-2 gap-5">
             <FormField
               control={form.control}
-              name='birthday'
+              name="birthday"
               render={({ field }) => (
-                <FormItem className='w-full'>
+                <FormItem className="w-full">
                   <FormControl>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
-                          variant='outline'
+                          variant="outline"
                           className={cn(
                             "w-full justify-start text-left font-normal",
-                            !field.value && "text-muted-foreground"
+                            !field.value && "text-muted-foreground",
                           )}
                         >
-                          <CalendarIcon className='mr-3 h-4 w-4' />
+                          <CalendarIcon className="mr-3 h-4 w-4" />
                           {field.value ? (
                             format(field.value, "PPP")
                           ) : (
@@ -125,10 +144,10 @@ const SignupForm = () => {
                           )}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent align='start' className='w-auto p-0'>
+                      <PopoverContent align="start" className="w-auto p-0">
                         <Calendar
-                          mode='single'
-                          captionLayout='dropdown-buttons'
+                          mode="single"
+                          captionLayout="dropdown-buttons"
                           selected={field.value}
                           onSelect={field.onChange}
                           fromYear={1960}
@@ -142,29 +161,29 @@ const SignupForm = () => {
             />
             <FormField
               control={form.control}
-              name='gender'
+              name="gender"
               render={({ field }) => (
-                <FormItem className='w-full'>
+                <FormItem className="w-full">
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className='flex border dark:border-gray-600 py-[7px] rounded-md px-5 justify-between items-center gap-5'
+                      className="flex items-center justify-between gap-5 rounded-md border px-5 py-[7px] dark:border-gray-600"
                     >
                       {field.value === "male" ? <IoMale /> : <IoFemale />}
-                      <FormItem className='flex items-center space-x-3 space-y-0'>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value='male' />
+                          <RadioGroupItem value="male" />
                         </FormControl>
-                        <FormLabel className='leading-6 font-normal'>
+                        <FormLabel className="font-normal leading-6">
                           Male
                         </FormLabel>
                       </FormItem>
-                      <FormItem className='flex items-center space-x-3 space-y-0'>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value='female' />
+                          <RadioGroupItem value="female" />
                         </FormControl>
-                        <FormLabel className='leading-6 font-normal'>
+                        <FormLabel className="font-normal leading-6">
                           Female
                         </FormLabel>
                       </FormItem>
@@ -175,8 +194,12 @@ const SignupForm = () => {
             />
           </div>
         </div>
-        <Button type='submit' className='w-full'>
-          Sign Up
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={form.formState.isSubmitting}
+        >
+          {form.formState.isSubmitting ? "Loading..." : "Sign Up"}
         </Button>
       </form>
     </Form>

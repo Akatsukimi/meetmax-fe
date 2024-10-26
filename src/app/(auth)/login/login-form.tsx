@@ -20,6 +20,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { login } from "@/services/auth";
 import toast from "react-hot-toast";
+import { AtSign, Lock } from "lucide-react";
+import { PasswordInput } from "@/components/ui/password-input";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -53,16 +55,22 @@ const LoginForm = () => {
   };
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-7.5'>
-        <div className='space-y-5'>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-7.5">
+        <div className="space-y-5">
           <FormField
             control={form.control}
-            name='email'
+            name="email"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder='Your Email' {...field} />
+                  <Input
+                    icon={AtSign}
+                    placeholder="Your Email"
+                    className="pl-10"
+                    disabled={form.formState.isSubmitting}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -70,25 +78,35 @@ const LoginForm = () => {
           />
           <FormField
             control={form.control}
-            name='password'
+            name="password"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type='password' placeholder='password' {...field} />
+                  <PasswordInput
+                    icon={Lock}
+                    placeholder="Your Password"
+                    className="pl-10"
+                    disabled={form.formState.isSubmitting}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
-                <div className='flex items-center justify-end'>
-                  <Button size='sm' variant='link' asChild className='p-0'>
-                    <Link href='/reset'>Forgot password?</Link>
+                <div className="flex items-center justify-end">
+                  <Button size="sm" variant="link" asChild className="p-0">
+                    <Link href="/reset">Forgot password?</Link>
                   </Button>
                 </div>
               </FormItem>
             )}
           />
         </div>
-        <Button type='submit' className='w-full'>
-          Login
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={form.formState.isSubmitting}
+        >
+          {form.formState.isSubmitting ? "Loading..." : "Login"}
         </Button>
       </form>
     </Form>
