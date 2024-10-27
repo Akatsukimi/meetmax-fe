@@ -126,6 +126,7 @@ const SignupForm = () => {
               name="birthday"
               render={({ field }) => (
                 <FormItem className="w-full">
+                  <FormLabel>Birthday</FormLabel>
                   <FormControl>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -164,6 +165,7 @@ const SignupForm = () => {
               name="gender"
               render={({ field }) => (
                 <FormItem className="w-full">
+                  <FormLabel>Gender</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
