@@ -22,7 +22,6 @@ export const refreshToken = async () => {
   return await axiosInstance.post("http://localhost:8000/api/auth/refresh");
 };
 
-// export const handleLogout = async () => {
-//   await axiosInstance.post("http://localhost:8000/api/auth/logout");
-//   localStorage.removeItem("user");
-// };
+export const handleLogout = async () => {
+  return await axiosInstance.post("http://localhost:8000/api/auth/logout");
+};
