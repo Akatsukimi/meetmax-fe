@@ -58,15 +58,18 @@ const config: Config = {
       },
       padding: {
         7.5: "30px",
+        4.5: "18px",
       },
       margin: {
         7.5: "30px",
+        4.5: "18px",
       },
       space: {
         7.5: "30px",
       },
       gap: {
         7.5: "30px",
+        4.5: "18px",
       },
       keyframes: {
         "caret-blink": {

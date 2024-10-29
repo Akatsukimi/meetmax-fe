@@ -1,10 +1,11 @@
 import { Ellipsis } from "lucide-react";
+
 import { Button } from "../ui/button";
-import { ScrollArea, ScrollBar } from "../ui/scroll-area";
+import { ScrollArea } from "../ui/scroll-area";
 
 const Friends = () => {
   return (
-    <div className='flex max-h-screen w-full flex-col gap-5'>
+    <div className='flex h-full w-full flex-col gap-5'>
       <div className='flex items-center justify-between'>
         <span>Friends</span>
         <Button size='icon' variant='ghost'>
