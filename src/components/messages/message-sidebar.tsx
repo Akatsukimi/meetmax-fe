@@ -1,6 +1,7 @@
 import { Plus, Search } from "lucide-react";
-import { Button } from "../ui/button";
+
 import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
 
 const MessageSidebar = () => {
