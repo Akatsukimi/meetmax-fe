@@ -1,6 +1,6 @@
 import { Ellipsis } from "lucide-react";
 import { Button } from "../ui/button";
-import { ScrollArea, ScrollBar } from "../ui/scroll-area";
+import { ScrollArea } from "../ui/scroll-area";
 
 const Friends = () => {
   return (

@@ -1,6 +1,6 @@
 import React from "react";
-import User from "../user";
 import getSession from "@/lib/getSession";
+import User from "@/app/user";
 
 const FeedPage = () => {
   const user = getSession();

@@ -74,7 +74,7 @@ body {
     @apply border-border;
   }
   body {
-    @apply h-full bg-background text-foreground font-medium;
+    @apply h-full overflow-auto bg-background text-foreground font-medium;
   }
 }
 

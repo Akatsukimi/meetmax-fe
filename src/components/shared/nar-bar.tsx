@@ -11,7 +11,7 @@ const Navbar = () => {
 
   return (
     <header className='sticky top-0 z-10 bg-background'>
-      <div className='mx-auto flex w-full items-center justify-between gap-5 px-5 py-4'>
+      <div className='mx-auto flex w-full items-center justify-between gap-5 px-7.5 py-4'>
         <Link href='/' className='gap-2.5 items-center hidden sm:flex'>
           <Image
             src={Logo}

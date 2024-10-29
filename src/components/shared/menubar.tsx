@@ -44,7 +44,7 @@ const Menubar = ({ className }: MenubarProps) => {
               key={item.href}
               variant="ghost"
               className={cn(
-                "flex items-center justify-start gap-5 px-5 py-3",
+                "flex items-center justify-start gap-5 px-5 py-3 w-full",
                 isActive(item.href) &&
                   "bg-gray-800 text-background hover:bg-gray-800 hover:text-background",
               )}
