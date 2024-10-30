@@ -3,7 +3,7 @@ export type ConversationType = {
   creator: User;
   recipient: User;
   createdAt: string;
-  lastMessageSent: MessageType;
+  lastMessageSent: LastMessageSent;
 };
 
 export type CreateConversationParams = {
@@ -29,18 +29,22 @@ export type UserCredentialsParams = {
 };
 
 export type User = {
-  id: number;
+  id: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  avatar?: string;
+  username: string;
 };
 
 export type MessageType = {
-  id: number;
+  id: string;
   content: string;
   createdAt: string;
   author: User;
-  conversation: ConversationType;
+};
+
+export type LastMessageSent = {
+  content: string;
+  createdAt: Date;
 };
 
 export type MessageEventPayload = {

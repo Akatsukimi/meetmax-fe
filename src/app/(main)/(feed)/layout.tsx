@@ -8,7 +8,7 @@ const MainLayout = ({
 }>) => {
   return (
     <>
-      <div className='px-7.5 flex w-full grow'>
+      <div className='mx-auto gap-4 flex w-full flex-grow'>
         <Menubar className='sticky top-[4.625rem] hidden h-full flex-none space-y-3 rounded-2xl bg-card py-2.5 sm:block xl:w-48' />
         <div className='bg-gray-50 p-7.5 rounded-t-2xl flex-1'>{children}</div>
         <RightBar className='sticky top-[4.625rem] hidden h-full xl:flex flex-col rounded-2xl bg-card px-5 gap-7.5 py-1 lg:px-5 xl:w-80' />
