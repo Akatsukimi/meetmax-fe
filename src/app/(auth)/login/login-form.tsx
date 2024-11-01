@@ -41,9 +41,11 @@ const LoginForm = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await login(values);
-      toast.success("Login successful");
-      navigate.push("/");
+      await login(values).then(({ data }) => {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        navigate.push("/");
+        toast.success("Login successful");
+      });
     } catch (error: any) {
       if (error.response.data.statusCode === 401) {
         toast.error(error.response.data.message);
