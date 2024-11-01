@@ -11,8 +11,10 @@ import {
   CreateConversationParams,
   MessageEventPayload,
 } from "@/lib/types";
-import { postNewConversation } from "@/lib/api";
-import { getConversations } from "@/services/users";
+import {
+  getConversations,
+  postNewConversation,
+} from "@/services/conversations";
 
 export interface ConversationsState {
   conversations: ConversationType[];
@@ -53,7 +55,10 @@ export const conversationsSlice = createSlice({
       if (index === -1) return;
       state.conversations.splice(index, 1);
       state.conversations.unshift(conversation);
-      state.conversations[0]["lastMessageSent"] = action.payload.message;
+      state.conversations[0]["lastMessageSent"] = {
+        ...action.payload.message,
+        createdAt: new Date(action.payload.message.createdAt),
+      };
     },
   },
   extraReducers: (builder) => {
@@ -82,8 +87,8 @@ export const conversationsSlice = createSlice({
 });
 
 const selectConversations = (state: RootState) =>
-  state.conversations.conversations;
-const selectConversationId = (state: RootState, id: number) => id;
+  state.conversation.conversations;
+const selectConversationId = (state: RootState, id: string) => id;
 
 export const selectConversationById = createSelector(
   [selectConversations, selectConversationId],

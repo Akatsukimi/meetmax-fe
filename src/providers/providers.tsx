@@ -1,23 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { User } from "@/lib/types";
 
 import ToastProvider from "./toast-provider";
 import { AuthContext } from "./auth-provider";
 import ReactQueryProvider from "./react-query-provider";
+import { Provider as ReduxProvider } from "react-redux";
+import { makeStore } from "@/lib/store";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const initialUser = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user") as string)
-    : null;
-  const [user, setUser] = useState<User>(initialUser);
+  const [user, setUser] = useState<User>();
+
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("user") as string));
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, updateAuthUser: setUser }}>
-      <ToastProvider />
-      <ReactQueryProvider>{children}</ReactQueryProvider>
-    </AuthContext.Provider>
+    <ReduxProvider store={makeStore()}>
+      <AuthContext.Provider value={{ user, updateAuthUser: setUser }}>
+        <ToastProvider />
+        <ReactQueryProvider>{children}</ReactQueryProvider>
+      </AuthContext.Provider>
+    </ReduxProvider>
   );
 }
