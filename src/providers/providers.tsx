@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { User } from "@/lib/types";
 
@@ -9,10 +9,14 @@ import { AuthContext } from "./auth-provider";
 import ReactQueryProvider from "./react-query-provider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const initialUser = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user") as string)
-    : null;
-  const [user, setUser] = useState<User>(initialUser);
+  const [user, setUser] = useState<User>();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser as string));
+    }
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, updateAuthUser: setUser }}>
