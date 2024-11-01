@@ -1,4 +1,4 @@
-import Navbar from "@/components/shared/nar-bar";
+import HeaderBar from "@/components/shared/header-bar";
 
 const MainLayout = ({
   children,
@@ -6,8 +6,8 @@ const MainLayout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <div className='h-screen flex flex-col max-w-[1440px] mx-auto'>
-      <Navbar />
+    <div className="h-screen flex flex-col max-w-[1440px] mx-auto">
+      <HeaderBar />
       {children}
     </div>
   );
