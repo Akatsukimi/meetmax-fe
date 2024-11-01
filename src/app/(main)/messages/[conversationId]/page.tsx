@@ -16,7 +16,8 @@ const ConversationIdPage = () => {
     staleTime: Infinity,
   });
   if (isLoading || !user) return <div>Loading...</div>;
-  console.log("🚀 ~ ConversationIdPage ~ user:", user);
+
+  console.log("🚀 ~ ConversationIdPage ~ data:", data.messages);
   return (
     <ConversationPanel
       messages={data.messages}

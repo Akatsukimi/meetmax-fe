@@ -1,23 +1,50 @@
 "use client";
 
+import { useState } from "react";
+import dynamic from "next/dynamic";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { Link, SendHorizontal, Smile } from "lucide-react";
+import Emoji, { gitHubEmojis } from "@tiptap-pro/extension-emoji";
 
 import "./styles.css";
 import { Button } from "../ui/button";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createMessage } from "@/services/conversations";
+import { useParams } from "next/navigation";
+
+const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
 const MessageEditor = () => {
+  const params = useParams<{ conversationId: string }>();
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: ({
+      conversationId,
+      content,
+    }: {
+      conversationId: string;
+      content: string;
+    }) => createMessage(conversationId, content),
+    onSettled: (data, error, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["conversations", variables.conversationId],
+      });
+    },
+  });
   const CustomStarterKit = StarterKit.extend({
     addKeyboardShortcuts() {
       return {
         Enter: ({ editor }) => {
-          const input =
-            editor?.getText({
-              blockSeparator: "\n",
-            }) || "";
+          const input = editor?.getText({ blockSeparator: "\n" }) || "";
           console.log("input message", input);
+          mutation.mutate({
+            conversationId: params.conversationId,
+            content: input,
+          });
+          setShowEmojiPicker(false);
           editor?.commands.clearContent();
           return true;
         },
@@ -32,20 +59,22 @@ const MessageEditor = () => {
   const editor = useEditor({
     extensions: [
       CustomStarterKit.configure({ bold: false, italic: false }),
-      Placeholder.configure({
-        placeholder: "Type something here...",
-      }),
+      Placeholder.configure({ placeholder: "Type something here..." }),
+      Emoji.configure({ emojis: gitHubEmojis, enableEmoticons: true }),
     ],
     autofocus: true,
   });
 
   const onSubmit = async () => {
-    const input =
-      editor?.getText({
-        blockSeparator: "\n",
-      }) || "";
-    console.log("input message", input);
+    const input = editor?.getText({ blockSeparator: "\n" }) || "";
+    console.log("Submitted message:", input);
+    mutation.mutate({ conversationId: params.conversationId, content: input });
+    setShowEmojiPicker(false);
     editor?.commands.clearContent();
+  };
+
+  const handleEmojiClick = (event, emojiObject) => {
+    editor?.chain().focus().insertContent(event.emoji).run();
   };
 
   return (
@@ -54,20 +83,43 @@ const MessageEditor = () => {
         <Button variant='ghost' size='icon'>
           <Link />
         </Button>
-        <Button variant='ghost' size='icon'>
+        <Button
+          variant='ghost'
+          size='icon'
+          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+        >
           <Smile />
         </Button>
+        {showEmojiPicker && (
+          <div className='absolute bottom-full right-0 mb-2'>
+            <EmojiPicker onEmojiClick={handleEmojiClick} />
+          </div>
+        )}
       </div>
       <div className='flex-1 max-w-[633px]'>
         <EditorContent editor={editor} />
       </div>
-      <Button
-        onClick={onSubmit}
-        variant='ghost'
-        className='bg-primary/10 p-4 size-12'
-      >
-        <SendHorizontal className='text-primary' />
-      </Button>
+      {editor?.getText({ blockSeparator: "\n" }) === "" ? (
+        <Button
+          onClick={() => {
+            editor?.chain().focus().setEmoji("fire").run();
+            onSubmit();
+          }}
+          variant='ghost'
+          size='icon'
+          className='p-3 size-12 text-2xl'
+        >
+          🔥
+        </Button>
+      ) : (
+        <Button
+          onClick={onSubmit}
+          variant='ghost'
+          className='bg-primary/10 p-4 size-12'
+        >
+          <SendHorizontal className='text-primary' />
+        </Button>
+      )}
     </div>
   );
 };

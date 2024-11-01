@@ -9,3 +9,14 @@ export const getConversationMessages = async (conversationId: string) => {
   const response = await axiosInstance.get(`/api/messages/${conversationId}`);
   return response.data;
 };
+
+export const createMessage = async (
+  conversationId: string,
+  content: string
+) => {
+  const response = await axiosInstance.post("/api/messages", {
+    conversationId,
+    content,
+  });
+  return response.data;
+};

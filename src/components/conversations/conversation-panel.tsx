@@ -4,6 +4,7 @@ import MessageEditor from "../messages/message-editor";
 import ConversationHeader from "./conversation-header";
 import { MessageType } from "@/lib/types";
 import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 interface ConversationPanelProps {
   messages: MessageType[];
@@ -49,7 +50,7 @@ const ConversationPanel = ({
                 {formatDateLabel(dateKey)}
               </span>
             </div>
-            {messages.map((message, index) => {
+            {messages.reverse().map((message, index) => {
               if (!message) return null;
               const prevMessage = messages[index - 1];
               const isCompact =
@@ -59,7 +60,22 @@ const ConversationPanel = ({
                   new Date(message.createdAt),
                   new Date(prevMessage.createdAt)
                 ) < TIME_THRESHOLD;
-              return <div key={message.id}>{message.content}</div>;
+              return (
+                <div key={message.id} className='flex items-start'>
+                  {/* Only show avatar if this is the first message in a group */}
+                  {!isCompact && (
+                    <Avatar className='size-10'>
+                      <AvatarImage src={message.author.avatar} />
+                      <AvatarFallback>
+                        {message.author.username.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
+                  <div style={{ marginLeft: isCompact ? "50px" : "10px" }}>
+                    {message.content}
+                  </div>
+                </div>
+              );
             })}
           </div>
         ))}
