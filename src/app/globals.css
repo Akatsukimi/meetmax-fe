@@ -78,6 +78,16 @@ body {
   }
 }
 
+/* Hide scrollbar for Webkit-based browsers */
+.custom-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+.custom-scrollbar {
+  scrollbar-width: none;
+}
+
 html,
 #root {
   height: 100%;

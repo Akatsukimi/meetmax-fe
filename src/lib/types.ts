@@ -1,5 +1,5 @@
 export type ConversationType = {
-  id: number;
+  id: string;
   creator: User;
   recipient: User;
   createdAt: string;
@@ -12,7 +12,7 @@ export type CreateConversationParams = {
 };
 
 export type FetchMessagePayload = {
-  id: number;
+  id: string;
   messages: MessageType[];
 };
 
@@ -58,6 +58,6 @@ export type CreateMessageParams = {
 };
 
 export type ConversationMessage = {
-  id: number;
+  id: string;
   messages: MessageType[];
 };

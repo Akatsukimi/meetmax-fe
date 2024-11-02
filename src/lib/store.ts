@@ -1,17 +1,22 @@
 import { configureStore } from "@reduxjs/toolkit";
 
-import conversationReducer from "./features/conversations/conversationSlice";
-import messageReducer from "./features/messages/messageSlice";
+import usersReducer from "./features/users/usersSlice";
+import messagesReducer from "./features/messages/messageSlice";
+import conversationsReducer from "./features/conversations/conversationSlice";
 
-export const store = configureStore({
-  reducer: {
-    conversations: conversationReducer,
-    messages: messageReducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ serializableCheck: false }),
-  devTools: true,
-});
+export const makeStore = () => {
+  return configureStore({
+    reducer: {
+      conversation: conversationsReducer,
+      messages: messagesReducer,
+      user: usersReducer,
+    },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({ serializableCheck: false }),
+    devTools: true,
+  });
+};
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export type AppStore = ReturnType<typeof makeStore>;
+export type RootState = ReturnType<AppStore["getState"]>;
+export type AppDispatch = AppStore["dispatch"];

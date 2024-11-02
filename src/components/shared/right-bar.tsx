@@ -1,14 +1,17 @@
+"use client";
+
 import Friends from "./friends";
 import Stories from "./stories";
 import SearchFriend from "./search-friend";
+import { usePathname } from "next/navigation";
 
-interface RightBarProps {
-  className?: string;
-}
+const RightBar = () => {
+  const pathname = usePathname();
+  const showRightBar = pathname === "/" || pathname === "/communities";
+  if (!showRightBar) return null;
 
-const RightBar = ({ className }: RightBarProps) => {
   return (
-    <div className={className}>
+    <div className='flex-1 max-w-[280px] '>
       <SearchFriend />
       <Stories />
       <Friends />
