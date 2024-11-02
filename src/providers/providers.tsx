@@ -1,10 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useEffect, useState } from "react";
-
 import { User } from "@/lib/types";
-
 import ToastProvider from "./toast-provider";
 import { AuthContext } from "./auth-provider";
 import ReactQueryProvider from "./react-query-provider";
