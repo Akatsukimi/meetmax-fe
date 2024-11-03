@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 export const BACKEND_URL = process.env.BACKEND_URL;
+export const SOCKET_URL = process.env.SOCKET_URL;
 
 export const MenuBar = [
   {

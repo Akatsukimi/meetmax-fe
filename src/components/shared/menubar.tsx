@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { MenuBar } from "@/lib/constants";
 import { handleLogout } from "@/services/auth";
+import {useSocket} from "@/providers/socket-provider";
 
 interface MenubarProps {
   className?: string;
@@ -14,6 +15,7 @@ interface MenubarProps {
 
 const Menubar = ({ className }: MenubarProps) => {
   const router = useRouter();
+  const socket = useSocket()
   const pathname = usePathname();
   const isActive = (basePath: string) => {
     if (basePath === "/") {
@@ -25,7 +27,7 @@ const Menubar = ({ className }: MenubarProps) => {
   const handleLogoutClick = async () => {
     try {
       await handleLogout();
-
+      socket?.disconnect();
       router.push("/login");
     } catch (error) {
       console.error("Logout failed", error);

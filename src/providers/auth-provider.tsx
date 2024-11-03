@@ -4,7 +4,7 @@ import { User } from "@/lib/types";
 import { createContext } from "react";
 
 type AuthContextType = {
-  user?: User;
+  user?: User | null;
   updateAuthUser: (data: User) => void;
 };
 

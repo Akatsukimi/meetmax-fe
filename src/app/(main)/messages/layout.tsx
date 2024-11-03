@@ -8,6 +8,8 @@ import {AppDispatch} from "@/lib/store";
 import {Search} from "lucide-react";
 import {useEffect} from "react";
 import {useDispatch} from "react-redux";
+import {useSocket} from "@/providers/socket-provider";
+
 
 const MainLayout = ({
                         children,
@@ -15,10 +17,19 @@ const MainLayout = ({
     children: React.ReactNode;
 }>) => {
     const dispatch = useDispatch<AppDispatch>();
+    const socket = useSocket();
 
     useEffect(() => {
         dispatch(fetchConversationsThunk())
     }, [dispatch]);
+
+    useEffect(() => {
+        // socket.on('onMessage', (payload: MessageEventPayload) => {
+        //     console.log("Message received", payload)
+        //     dispatch(addMessage(payload))
+        //     dispatch(updateConversation(payload.conversation))
+        // })
+    }, []);
 
     return (
         <div className='flex flex-grow'>
