@@ -1,8 +1,12 @@
-import { ConversationMessage } from "./types";
+import {ConversationMessages, Message} from "./types";
 
 export const formatConversationMessages = (
-  conversationMessages: ConversationMessage[],
-  id: string | undefined
-) => {
-  return conversationMessages.find((m) => m.id === id)?.messages || [];
+    conversationMessages: ConversationMessages,
+    id: string
+): Message[] => {
+  if (conversationMessages.conversationId === id) {
+    return conversationMessages.messages;
+  }
+
+  return [];
 };

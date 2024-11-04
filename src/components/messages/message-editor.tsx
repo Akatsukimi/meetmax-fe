@@ -12,19 +12,23 @@ import "./styles.css";
 import {Button} from "../ui/button";
 import {useParams} from "next/navigation";
 import {createMessage} from "@/services/conversations";
+import {useMutation} from "@tanstack/react-query";
 
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), {ssr: false});
 
 const MessageEditor = () => {
     const params = useParams<{ conversationId: string }>();
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const mutation = useMutation({
+        mutationFn: createMessage,
+    })
 
     const CustomStarterKit = StarterKit.extend({
         addKeyboardShortcuts() {
             return {
                 Enter: ({editor}) => {
                     const input = editor?.getText({blockSeparator: "\n"}) || "";
-                    console.log("input message", input);
+                    mutation.mutate({conversationId: params.conversationId, content: input});
                     setShowEmojiPicker(false);
                     editor?.commands.clearContent();
                     return true;
@@ -49,7 +53,8 @@ const MessageEditor = () => {
     const onSubmit = async () => {
         const input = editor?.getText({blockSeparator: "\n"}) || "";
         console.log("Submitted message:", input);
-        await createMessage({conversationId: params.conversationId, content: input});
+        // await createMessage({conversationId: params.conversationId, content: input});
+        mutation.mutate({conversationId: params.conversationId, content: input});
         setShowEmojiPicker(false);
         editor?.commands.clearContent();
     };

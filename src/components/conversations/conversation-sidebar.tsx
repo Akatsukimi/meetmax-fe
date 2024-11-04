@@ -3,11 +3,11 @@
 import {ScrollArea} from "../ui/scroll-area";
 import {Avatar, AvatarFallback, AvatarImage} from "../ui/avatar";
 import {format, isToday, isYesterday} from "date-fns";
-import {useParams, useRouter} from "next/navigation";
-import {useSelector} from "react-redux";
-import {RootState} from "@/lib/store";
-import {useEffect} from "react";
-
+import {useParams, usePathname, useRouter} from "next/navigation";
+import {getConversations} from "@/services/conversations";
+import {useQuery} from "@tanstack/react-query";
+import {Conversation} from "@/lib/types";
+import {cn} from "@/lib/utils";
 
 const formatFullTime = (date: Date) => {
     if (!date) return "";
@@ -23,21 +23,26 @@ const formatFullTime = (date: Date) => {
 const ConversationSidebar = () => {
     const router = useRouter();
     const params = useParams<{ conversationId: string }>()
-    const {conversations} = useSelector(
-        (state: RootState) => state.conversation
-    );
+    const pathname = usePathname();
 
-    useEffect(() => {
-        if (!params.conversationId && conversations.length > 0) {
-            router.push(`/messages/${conversations[0]?.id}`);
-        }
-    }, []);
+    const {data: conversations, isLoading} = useQuery<Conversation[]>({
+        queryKey: ['conversations'],
+        queryFn: getConversations,
+        staleTime: Infinity
+    })
+
+    if (isLoading || !conversations) return <div>Loading...</div>
+
+
+    if (pathname === '/messages' && conversations.length > 0) {
+        router.push(`/messages/${conversations[0].id}`)
+    }
 
     return (
         <ScrollArea className='flex-1 overflow-auto'>
-            {conversations.map((conversation) => (
+            {conversations.map((conversation: Conversation) => (
                 <div
-                    className='flex p-3 transition-all mx-3 rounded-md cursor-pointer hover:bg-gray-100 gap-2.5 items-center'
+                    className={cn('flex p-3 transition-all mx-3 rounded-md cursor-pointer hover:bg-gray-100 gap-2.5 items-center', params.conversationId === conversation.id && 'bg-gray-200')}
                     key={conversation.id}
                     onClick={() => router.push(`/messages/${conversation.id}`)}
                 >

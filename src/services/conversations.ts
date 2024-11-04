@@ -1,8 +1,9 @@
 import axiosInstance from "@/lib/axiosInstance";
-import {CreateConversationParams} from "@/lib/types";
+import {Conversation, CreateConversationParams} from "@/lib/types";
 
-export const getConversations = async () => {
-    return await axiosInstance.get("/api/conversations");
+export const getConversations = async (): Promise<Conversation[]> => {
+    const response =  await axiosInstance.get("/api/conversations");
+    return response.data
 };
 
 export const postNewConversation = async (data: CreateConversationParams) => {
@@ -10,7 +11,8 @@ export const postNewConversation = async (data: CreateConversationParams) => {
 };
 
 export const getConversationMessages = async (conversationId: string) => {
-    return await axiosInstance.get(`/api/messages/${conversationId}`);
+    const response = await axiosInstance.get(`/api/messages/${conversationId}`);
+    return response.data
 };
 
 export const createMessage = async (
