@@ -1,11 +1,11 @@
 "use client";
 
 import ConversationPanel from "@/components/conversations/conversation-panel";
-import { useParams } from "next/navigation";
-import { useContext, useEffect } from "react";
-import { SocketContext } from "@/providers/socket-provider";
-import { useQueryClient } from "@tanstack/react-query";
-import { Conversation, Message, MessageEventPayload } from "@/lib/types";
+import {useParams} from "next/navigation";
+import {useContext, useEffect} from "react";
+import {SocketContext} from "@/providers/socket-provider";
+import {useQueryClient} from "@tanstack/react-query";
+import {Conversation, Message, MessageEventPayload} from "@/lib/types";
 
 const ConversationIdPage = () => {
     const socket = useContext(SocketContext);
@@ -13,7 +13,7 @@ const ConversationIdPage = () => {
 
     useEffect(() => {
         socket.on('onMessage', (payload: MessageEventPayload) => {
-            const { conversation, message } = payload;
+            const {conversation, message} = payload;
 
             queryClient.setQueryData(['conversation-messages', conversation.id], (oldData: { messages: Message[] }) => {
                 return {
@@ -25,7 +25,7 @@ const ConversationIdPage = () => {
             queryClient.setQueryData(['conversations'], (oldConversations: Conversation[] | undefined) => {
                 if (!oldConversations) return [];
                 const updatedConversations = oldConversations.map((conv) =>
-                    conv.id === payload.conversation.id ? { ...conv, lastMessageSent: payload.message } : conv
+                    conv.id === payload.conversation.id ? {...conv, lastMessageSent: payload.message} : conv
                 );
                 const conversationIndex = updatedConversations.findIndex(conv => conv.id === payload.conversation.id);
                 if (conversationIndex > -1) {
@@ -35,14 +35,21 @@ const ConversationIdPage = () => {
                 return updatedConversations;
             });
         });
+        socket.on('onConversation', (payload: Conversation) => {
+            queryClient.setQueryData(['conversations'], (oldConversations: Conversation[] | undefined) => {
+                if (!oldConversations) return [];
+                return [payload, ...oldConversations];
+            });
+        });
 
         return () => {
             socket.off('onMessage');
+            socket.off('onConversation');
         };
     }, [queryClient, socket]);
 
     return (
-        <ConversationPanel />
+        <ConversationPanel/>
     );
 };
 

@@ -6,8 +6,9 @@ export const getConversations = async (): Promise<Conversation[]> => {
     return response.data
 };
 
-export const postNewConversation = async (data: CreateConversationParams) => {
-    return await axiosInstance.post("/api/conversations", data);
+export const createConversation = async (data: CreateConversationParams) => {
+    const response =  await axiosInstance.post("/api/conversations", data);
+    return response.data
 };
 
 export const getConversationMessages = async (conversationId: string) => {

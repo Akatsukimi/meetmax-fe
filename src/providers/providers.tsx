@@ -22,7 +22,7 @@ export function Providers({children}: { children: React.ReactNode }) {
     }, []);
 
     return (
-        <ReduxProvider store={makeStore()}>
+        // <ReduxProvider store={makeStore()}>
             <AuthContext.Provider value={{user, updateAuthUser: setUser}}>
                 <ToastProvider/>
                 {user && (
@@ -31,6 +31,6 @@ export function Providers({children}: { children: React.ReactNode }) {
                     </SocketProvider>
                 )}
             </AuthContext.Provider>
-        </ReduxProvider>
+        // </ReduxProvider>
     );
 }

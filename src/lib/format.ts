@@ -1,4 +1,4 @@
-import {ConversationMessages, Message} from "./types";
+import {Conversation, ConversationMessages, Message, User} from "./types";
 
 export const formatConversationMessages = (
     conversationMessages: ConversationMessages,
@@ -9,4 +9,13 @@ export const formatConversationMessages = (
   }
 
   return [];
+};
+
+export const getRecipientFromConversation = (
+    conversation?: Conversation,
+    user?: User
+) => {
+  return user?.id === conversation?.creator.id
+      ? conversation?.recipient
+      : conversation?.creator;
 };

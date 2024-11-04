@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import { useState } from "react";
 import { Plus } from "lucide-react";
@@ -16,6 +16,7 @@ import CreateConversationForm from "../forms/CreateConversationForm";
 
 const CreateConversationModal = () => {
   const [isOpen, setIsOpen] = useState(false);
+
   return (
     <Dialog open={isOpen} onOpenChange={() => setIsOpen(!isOpen)}>
       <DialogTrigger asChild>

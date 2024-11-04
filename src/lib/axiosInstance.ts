@@ -49,9 +49,9 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
       });
     }
-    if (error.response?.status !== 410) {
-      location.href = "/login";
-    }
+    // if (error.response?.status !== 410) {
+    //   location.href = "/login";
+    // }
     return Promise.reject(error);
   }
 );
