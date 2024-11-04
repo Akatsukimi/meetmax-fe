@@ -2,7 +2,13 @@
 
 import {ScrollArea} from "../ui/scroll-area";
 import {Avatar, AvatarFallback, AvatarImage} from "../ui/avatar";
-import {format, isToday, isYesterday} from "date-fns";
+import {
+    differenceInDays,
+    differenceInHours,
+    differenceInMinutes,
+    differenceInSeconds,
+    differenceInWeeks,
+} from "date-fns";
 import {useParams, usePathname, useRouter} from "next/navigation";
 import {getConversations} from "@/services/conversations";
 import {useQuery} from "@tanstack/react-query";
@@ -12,15 +18,28 @@ import {useContext} from "react";
 import {AuthContext} from "@/providers/auth-provider";
 import {getRecipientFromConversation} from "@/lib/format";
 
-const formatFullTime = (date: Date) => {
-    if (!date) return "";
-    return `${
-        isToday(date)
-            ? "Today"
-            : isYesterday(date)
-                ? "Yesterday"
-                : format(date, "MMM d, yyyy")
-    } at ${format(date, "h:mm:ss a")}`;
+const formatDateLabel = (dateStr: Date) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    if(!dateStr) return "";
+    const seconds = differenceInSeconds(now, date);
+    if (seconds < 60) {
+        return `${seconds}s`;
+    }
+    const minutes = differenceInMinutes(now, date);
+    if (minutes < 60) {
+        return `${minutes}m`;
+    }
+    const hours = differenceInHours(now, date);
+    if (hours < 24) {
+        return `${hours}h`;
+    }
+    const days = differenceInDays(now, date);
+    if (days < 7) {
+        return `${days}d`;
+    }
+    const weeks = differenceInWeeks(now, date);
+    return `${weeks}w`;
 };
 
 const ConversationSidebar = () => {
@@ -48,10 +67,9 @@ const ConversationSidebar = () => {
         <ScrollArea className='flex-1 overflow-auto'>
             {conversations.map((conversation: Conversation) =>{
                 const recipient = getRecipientFromConversation(conversation, user);
-
                 return (
                     <div
-                        className={cn('flex p-3 transition-all mx-3 rounded-md cursor-pointer hover:bg-gray-100 gap-2.5 items-center', params.conversationId === conversation.id && 'bg-gray-200')}
+                        className={cn('flex p-3 transition-all mx-3 rounded-md cursor-pointer hover:bg-gray-100 gap-2.5 items-center', params.conversationId === conversation.id && 'bg-gray-200 hover:bg-gray-200')}
                         key={conversation.id}
                         onClick={() => router.push(`/messages/${conversation.id}`)}
                     >
@@ -68,7 +86,7 @@ const ConversationSidebar = () => {
                                     {conversation.lastMessageSent?.content || "Content"}
                                 </p>
                                 <p className='text-sm font-normal text-foreground/60'>
-                                    {formatFullTime(conversation.lastMessageSent?.createdAt)}
+                                    {formatDateLabel(conversation.lastMessageSent?.createdAt)}
                                 </p>
                             </div>
                         </div>

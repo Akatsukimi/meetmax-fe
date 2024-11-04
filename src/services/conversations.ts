@@ -12,7 +12,7 @@ export const createConversation = async (data: CreateConversationParams) => {
 };
 
 export const getConversationMessages = async (conversationId: string) => {
-    const response = await axiosInstance.get(`/api/messages/${conversationId}`);
+    const response = await axiosInstance.get(`/api/conversations/${conversationId}/messages`);
     return response.data
 };
 
@@ -22,8 +22,17 @@ export const createMessage = async (
         content: string
     }
 ) => {
-    return await axiosInstance.post("/api/messages", {
-        conversationId,
+    return await axiosInstance.post(`/api/conversations/${conversationId}/messages`, {
         content,
     });
 };
+
+export const editMessage = async ({conversationId, messageId}: {conversationId: string, messageId: string}) => {
+    const response = await axiosInstance.patch(`/api/conversations/${conversationId}/messages/${messageId}`);
+    return response.data
+}
+
+export const deleteMessage = async ({conversationId, messageId}: {conversationId: string, messageId: string}) => {
+    const response = await axiosInstance.delete(`/api/conversations/${conversationId}/messages/${messageId}`);
+    return response.data
+}
