@@ -28,3 +28,15 @@ export const signupSchema = z.object({
   birthday: z.date(),
   gender: z.string(),
 });
+
+export const loginSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters" }),
+});
+
+export const createPostSchema = z.object({
+  content: z.string().min(1, { message: "Post content is required" }).trim(),
+  visibility: z.string().optional(),
+});

@@ -61,3 +61,12 @@ export type ConversationMessage = {
   id: string;
   messages: MessageType[];
 };
+
+export type Post = {
+  id: string;
+  content: string;
+  createdAt: string;
+  visibility: string;
+  author: User;
+  image?: string;
+};
