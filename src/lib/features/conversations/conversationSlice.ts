@@ -7,17 +7,14 @@ import {
 
 import { RootState } from "../../store";
 import {
-  ConversationType,
+  Conversation,
   CreateConversationParams,
   MessageEventPayload,
 } from "@/lib/types";
-import {
-  getConversations,
-  postNewConversation,
-} from "@/services/conversations";
+import { getConversations, createConversation } from "@/services/conversations";
 
 export interface ConversationsState {
-  conversations: ConversationType[];
+  conversations: Conversation[];
   loading: boolean;
 }
 
@@ -36,7 +33,7 @@ export const fetchConversationsThunk = createAsyncThunk(
 export const createConversationThunk = createAsyncThunk(
   "conversations/create",
   async (data: CreateConversationParams) => {
-    return await postNewConversation(data);
+    return await createConversation(data);
   }
 );
 
@@ -44,7 +41,7 @@ export const conversationsSlice = createSlice({
   name: "conversations",
   initialState,
   reducers: {
-    addConversation: (state, action: PayloadAction<ConversationType>) => {
+    addConversation: (state, action: PayloadAction<Conversation>) => {
       state.conversations.unshift(action.payload);
     },
     updateConversation: (state, action: PayloadAction<MessageEventPayload>) => {
@@ -64,7 +61,7 @@ export const conversationsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchConversationsThunk.fulfilled, (state, action) => {
-        state.conversations = action.payload.data;
+        state.conversations = action.payload;
         state.loading = false;
       })
       .addCase(fetchConversationsThunk.pending, (state) => {
