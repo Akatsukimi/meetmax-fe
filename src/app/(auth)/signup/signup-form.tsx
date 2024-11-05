@@ -48,14 +48,10 @@ const SignupForm = () => {
   const onSubmit = async (values: z.infer<typeof signupSchema>) => {
     try {
       await signup(values);
-      toast.success("Signup successful");
       navigate.push("/");
+      toast.success("Sign up successfully");
     } catch (error: any) {
-      if (error.response.data.statusCode === 401) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error("An unexpected error occurred");
-      }
+      toast.error(`Sign up failed: ${error.message}`);
     }
   };
 
@@ -134,7 +130,7 @@ const SignupForm = () => {
                           variant="outline"
                           className={cn(
                             "w-full justify-start text-left font-normal",
-                            !field.value && "text-muted-foreground",
+                            !field.value && "text-muted-foreground"
                           )}
                         >
                           <CalendarIcon className="mr-3 h-4 w-4" />

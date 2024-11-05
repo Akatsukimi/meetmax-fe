@@ -1,9 +1,9 @@
-import { ConversationMessage, MessageEventPayload } from "@/lib/types";
+import { ConversationMessages, MessageEventPayload } from "@/lib/types";
 import { getConversationMessages } from "@/services/conversations";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface MessagesState {
-  messages: ConversationMessage[];
+  messages: ConversationMessages[];
   loading: boolean;
 }
 
@@ -26,7 +26,7 @@ export const messagesSlice = createSlice({
     addMessage: (state, action: PayloadAction<MessageEventPayload>) => {
       const { conversation, message } = action.payload;
       const conversationMessage = state.messages.find(
-        (cm) => cm.id === conversation.id
+        (cm) => cm.conversationId === conversation.id
       );
       conversationMessage?.messages.push(message);
     },
@@ -35,7 +35,9 @@ export const messagesSlice = createSlice({
     builder
       .addCase(fetchMessagesThunk.fulfilled, (state, action) => {
         const { id } = action.payload.data;
-        const index = state.messages.findIndex((cm) => cm.id === id);
+        const index = state.messages.findIndex(
+          (cm) => cm.conversationId === id
+        );
         console.log("🚀 ~ .addCase ~ index:", index);
         if (index !== -1) {
           state.messages[index] = action.payload.data;

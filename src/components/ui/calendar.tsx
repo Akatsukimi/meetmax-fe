@@ -62,6 +62,7 @@ function Calendar({
         ...classNames,
       }}
       components={{
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         Dropdown: ({ value, onChange, children, ...props }: DropdownProps) => {
           const options = React.Children.toArray(
             children
@@ -80,11 +81,11 @@ function Calendar({
                 handleChange(value);
               }}
             >
-              <SelectTrigger className='focus:ring-0'>
+              <SelectTrigger className="focus:ring-0">
                 <SelectValue>{selected?.props?.children}</SelectValue>
               </SelectTrigger>
-              <SelectContent position='popper'>
-                <ScrollArea className='h-80'>
+              <SelectContent position="popper">
+                <ScrollArea className="h-80">
                   {options.map((option, id: number) => (
                     <SelectItem
                       key={`${option.props.value}-${id}`}
@@ -98,8 +99,10 @@ function Calendar({
             </Select>
           );
         },
-        IconLeft: ({ ...props }) => <ChevronLeft className='h-4 w-4' />,
-        IconRight: ({ ...props }) => <ChevronRight className='h-4 w-4' />,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
       }}
       {...props}
     />
