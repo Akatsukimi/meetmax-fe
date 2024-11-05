@@ -5,7 +5,7 @@ import { ScrollArea } from "../ui/scroll-area";
 
 const Friends = () => {
   return (
-    <div className='flex h-full w-full flex-col gap-5'>
+    <div className='flex h-full flex-col gap-5'>
       <div className='flex items-center justify-between'>
         <span>Friends</span>
         <Button size='icon' variant='ghost'>

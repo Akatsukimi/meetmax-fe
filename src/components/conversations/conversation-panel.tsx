@@ -3,41 +3,62 @@
 import {Separator} from "../ui/separator";
 import MessageEditor from "../messages/message-editor";
 import ConversationHeader from "./conversation-header";
-import {useContext} from "react";
+import {useContext, useState} from "react";
 import {AuthContext} from "@/providers/auth-provider";
-import {useSelector} from "react-redux";
-import {RootState} from "@/lib/store";
 import MessageBody from "@/components/messages/message-body";
 import {useParams} from "next/navigation";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
+import {getConversationMessages} from "@/services/conversations";
+import {Conversation, Message} from "@/lib/types";
+import {formatConversationMessages} from "@/lib/format";
 
 const ConversationPanel = () => {
     const params = useParams<{ conversationId: string }>()
     const {user} = useContext(AuthContext)
-    const {loading, messages: conversationMessages} = useSelector(
-        (state: RootState) => state.messages
+    const [stateEditing, setStateEditing] = useState<{ isEditing: boolean; message: Message | null }>({ isEditing: false, message: null });
+
+    const queryClient = useQueryClient()
+    const {data: conversationMessages, isLoading: isConversationMessagesLoading} = useQuery({
+        queryKey: ['conversation-messages', params.conversationId],
+        queryFn: () => getConversationMessages(params.conversationId),
+        staleTime: Infinity
+    })
+
+    const conversations = queryClient.getQueryData<Conversation[]>(['conversations']);
+
+    const currentConversation = conversations?.find(
+        (conversation) => conversation.id === params.conversationId
     );
-    const {conversations} = useSelector(
-        (state: RootState) => state.conversation
-    );
-    const conversation = conversations.find((conversation) => conversation.id === params.conversationId)
-    if (!user) return null
-    const recipient = conversation?.recipient.id === user.id ? conversation?.creator : conversation?.recipient
+    if(!user) return null;
+    const otherParticipant =
+        currentConversation &&
+        (currentConversation.creator.id === user.id
+            ? currentConversation.recipient
+            : currentConversation.creator);
+
+    const handleReplyClick = (message: Message) => {
+        setStateEditing({ isEditing: true, message });
+    };
+
+    const handleCloseEditing = () => {
+        setStateEditing({ isEditing: false, message: null });
+    };
 
     return (
         <div className='flex-grow bg-background rounded-lg flex flex-col overflow-hidden'>
             <ConversationHeader
-                recipient={recipient}/>
+                recipient={otherParticipant}/>
             <Separator/>
-            {loading ? (
+            {isConversationMessagesLoading ? (
                 <div className='flex items-center justify-center w-full h-full'>
                     <div className='p-2 border border-t-0 rounded-full animate-spin'></div>
                 </div>
             ) : (
-                <MessageBody messages={conversationMessages[0]?.messages} user={user}/>
+                <MessageBody messages={formatConversationMessages(conversationMessages, params.conversationId)} user={user} onReplyClick={handleReplyClick}/>
             )}
             <Separator/>
-            <div className='p-5'>
-                <MessageEditor/>
+            <div className='py-2 px-5'>
+                <MessageEditor stateEditing={stateEditing} setStateEditing={handleCloseEditing}/>
             </div>
         </div>
     );

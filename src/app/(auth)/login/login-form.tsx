@@ -21,10 +21,19 @@ import { login } from "@/services/auth";
 import toast from "react-hot-toast";
 import { AtSign, Lock } from "lucide-react";
 import { PasswordInput } from "@/components/ui/password-input";
+import { useSocket } from "@/providers/socket-provider";
 import { loginSchema } from "@/lib/validation";
+
+const formSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters" }),
+});
 
 const LoginForm = () => {
   const navigate = useRouter();
+  const socket = useSocket();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -37,6 +46,8 @@ const LoginForm = () => {
     try {
       await login(values).then(({ data }) => {
         localStorage.setItem("user", JSON.stringify(data.user));
+        socket?.connect();
+
         navigate.push("/");
         toast.success("Login successfully");
       });

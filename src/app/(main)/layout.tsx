@@ -13,7 +13,7 @@ const MainLayout = ({
       <div className='flex flex-grow gap-4 px-7.5 overflow-hidden'>
         <Menubar className='sticky hidden h-full flex-none space-y-3 rounded-2xl bg-card py-2.5 sm:block xl:w-48' />
         {children}
-        <RightBar />
+        <RightBar className='sticky w-[280px] h-full flex-none space-y-5 rounded-2xl bg-card py-2.5' />
       </div>
     </div>
   );

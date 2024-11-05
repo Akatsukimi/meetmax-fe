@@ -1,3 +1,5 @@
+"use client";
+
 import { z } from "zod";
 import { FC } from "react";
 import { useForm } from "react-hook-form";
@@ -13,6 +15,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useMutation } from "@tanstack/react-query";
+import { createConversation } from "@/services/conversations";
+import toast from "react-hot-toast";
 
 const createConversationFormSchema = z.object({
   email: z.string().email({
@@ -30,6 +35,13 @@ type CreateConversationFormProps = {
 const CreateConversationForm: FC<CreateConversationFormProps> = ({
   setIsOpen,
 }) => {
+  const mutation = useMutation({
+    mutationFn: createConversation,
+    onError: ({ response }: { response: { data: { message: string } } }) => {
+      toast.error(response.data.message);
+    },
+  });
+
   const form = useForm<z.infer<typeof createConversationFormSchema>>({
     resolver: zodResolver(createConversationFormSchema),
     defaultValues: {
@@ -42,7 +54,7 @@ const CreateConversationForm: FC<CreateConversationFormProps> = ({
     values: z.infer<typeof createConversationFormSchema>
   ) => {
     try {
-      console.log("🚀 ~ values:", values);
+      mutation.mutate(values);
     } catch (error) {
       console.error(error);
     } finally {

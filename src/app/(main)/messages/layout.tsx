@@ -1,25 +1,13 @@
-"use client";
-
 import ConversationSidebar from "@/components/conversations/conversation-sidebar";
 import CreateConversationModal from "@/components/modals/create-conversation-modal";
 import {Input} from "@/components/ui/input";
-import {fetchConversationsThunk} from "@/lib/features/conversations/conversationSlice";
-import {AppDispatch} from "@/lib/store";
 import {Search} from "lucide-react";
-import {useEffect} from "react";
-import {useDispatch} from "react-redux";
 
 const MainLayout = ({
                         children,
                     }: Readonly<{
     children: React.ReactNode;
 }>) => {
-    const dispatch = useDispatch<AppDispatch>();
-
-    useEffect(() => {
-        dispatch(fetchConversationsThunk())
-    }, [dispatch]);
-
     return (
         <div className='flex flex-grow'>
             <div className='bg-gray-50 p-7.5  rounded-t-2xl flex-1'>

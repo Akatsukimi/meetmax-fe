@@ -7,6 +7,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { MenuBar } from "@/lib/constants";
 import { handleLogout } from "@/services/auth";
+import {useSocket} from "@/providers/socket-provider";
+import {useQueryClient} from "@tanstack/react-query";
 
 interface MenubarProps {
   className?: string;
@@ -14,7 +16,10 @@ interface MenubarProps {
 
 const Menubar = ({ className }: MenubarProps) => {
   const router = useRouter();
+  const socket = useSocket()
   const pathname = usePathname();
+  const queryClient = useQueryClient();
+
   const isActive = (basePath: string) => {
     if (basePath === "/") {
       return pathname === "/";
@@ -25,7 +30,8 @@ const Menubar = ({ className }: MenubarProps) => {
   const handleLogoutClick = async () => {
     try {
       await handleLogout();
-
+      socket?.disconnect();
+      queryClient.clear();
       router.push("/login");
     } catch (error) {
       console.error("Logout failed", error);
