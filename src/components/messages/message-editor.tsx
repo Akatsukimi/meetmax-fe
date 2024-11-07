@@ -1,11 +1,12 @@
 "use client";
 
-import { useContext, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Content, EditorContent, useEditor } from "@tiptap/react";
 import { Link, SendHorizontal, Smile, X } from "lucide-react";
 import Emoji, { gitHubEmojis } from "@tiptap-pro/extension-emoji";
+import { Plugin, PluginKey } from "prosemirror-state";
 
 import "./styles.css";
 import { Button } from "../ui/button";
@@ -15,7 +16,7 @@ import { useMutation } from "@tanstack/react-query";
 import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 import { useOnClickOutside } from "usehooks-ts";
 import { Message } from "@/lib/types";
-import { AuthContext } from "@/providers/auth-provider";
+import { useAuth } from "@/providers/auth-provider";
 
 interface IMessageEditorProps {
   stateEditing: { isEditing: boolean; message: Message | null };
@@ -23,17 +24,18 @@ interface IMessageEditorProps {
     isEditing: boolean;
     message: Message | null;
   }) => void;
+  sendTypingStatus: () => void;
 }
 
 const MessageEditor = ({
   stateEditing,
   setStateEditing,
+  sendTypingStatus,
 }: IMessageEditorProps) => {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const params = useParams<{ conversationId: string }>();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const { isEditing, message } = stateEditing;
-  console.log("message editor", message);
   const mutation = useMutation({
     mutationFn: createMessage,
   });
@@ -57,6 +59,19 @@ const MessageEditor = ({
           return true;
         },
       };
+    },
+    addProseMirrorPlugins() {
+      return [
+        new Plugin({
+          key: new PluginKey("sendTypingStatus"),
+          props: {
+            handleKeyDown: () => {
+              sendTypingStatus();
+              return false;
+            },
+          },
+        }),
+      ];
     },
   });
 
@@ -88,37 +103,37 @@ const MessageEditor = ({
   useOnClickOutside(emojiPickerRef, handleClickOutside);
 
   return (
-    <div className="space-y-2">
+    <div className='space-y-2'>
       {isEditing && (
-        <div className="flex items-center justify-between">
-          <div className="flex items-start flex-col">
-            <p className="text-base">
+        <div className='flex items-center justify-between'>
+          <div className='flex items-start flex-col'>
+            <p className='text-base'>
               Replying to{" "}
               {message?.author.id === user?.id
                 ? "yourself"
                 : `${message?.author.username}`}
             </p>
-            <p className="text-sm text-foreground/70">{message?.content}</p>
+            <p className='text-sm text-foreground/70'>{message?.content}</p>
           </div>
           <Button
-            variant="ghost"
-            className="rounded-full"
-            size="iconSm"
+            variant='ghost'
+            className='rounded-full'
+            size='iconSm'
             onClick={() => setStateEditing({ isEditing: false, message: null })}
           >
             <X />
           </Button>
         </div>
       )}
-      <div className=" flex items-center gap-5">
-        <div className="relative flex-1 max-w-[633px]">
-          <div className="absolute right-3 top-1.5 flex items-center z-10">
-            <Button variant="ghost" size="icon">
+      <div className=' flex items-center gap-5'>
+        <div className='relative flex-1 max-w-[633px]'>
+          <div className='absolute right-3 top-1.5 flex items-center z-10'>
+            <Button variant='ghost' size='icon'>
               <Link />
             </Button>
             <Button
-              variant="ghost"
-              size="icon"
+              variant='ghost'
+              size='icon'
               onClick={() => setShowEmojiPicker(!showEmojiPicker)}
             >
               <Smile />
@@ -126,7 +141,7 @@ const MessageEditor = ({
             {showEmojiPicker && (
               <div
                 ref={emojiPickerRef}
-                className="absolute bottom-full right-0 mb-2"
+                className='absolute bottom-full right-0 mb-2'
               >
                 <EmojiPicker
                   emojiStyle={EmojiStyle.FACEBOOK}
@@ -143,19 +158,19 @@ const MessageEditor = ({
               editor?.chain().focus().setEmoji("fire").run();
               onSubmit();
             }}
-            variant="ghost"
-            size="icon"
-            className="p-3 size-12 text-2xl"
+            variant='ghost'
+            size='icon'
+            className='p-3 size-12 text-2xl'
           >
             🔥
           </Button>
         ) : (
           <Button
             onClick={onSubmit}
-            variant="ghost"
-            className="bg-primary/10 p-4 size-12"
+            variant='ghost'
+            className='bg-primary/10 p-4 size-12'
           >
-            <SendHorizontal className="text-primary" />
+            <SendHorizontal className='text-primary' />
           </Button>
         )}
       </div>

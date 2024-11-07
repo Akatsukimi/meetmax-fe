@@ -7,8 +7,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { MenuBar } from "@/lib/constants";
 import { handleLogout } from "@/services/auth";
-import {useSocket} from "@/providers/socket-provider";
-import {useQueryClient} from "@tanstack/react-query";
+import { useSocket } from "@/providers/socket-provider";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/providers/auth-provider";
 
 interface MenubarProps {
   className?: string;
@@ -16,9 +17,10 @@ interface MenubarProps {
 
 const Menubar = ({ className }: MenubarProps) => {
   const router = useRouter();
-  const socket = useSocket()
+  const socket = useSocket();
   const pathname = usePathname();
   const queryClient = useQueryClient();
+  const { updateAuthUser } = useAuth();
 
   const isActive = (basePath: string) => {
     if (basePath === "/") {
@@ -32,6 +34,8 @@ const Menubar = ({ className }: MenubarProps) => {
       await handleLogout();
       socket?.disconnect();
       queryClient.clear();
+      updateAuthUser(null);
+      localStorage.removeItem("user");
       router.push("/login");
     } catch (error) {
       console.error("Logout failed", error);
@@ -48,17 +52,17 @@ const Menubar = ({ className }: MenubarProps) => {
           return (
             <Button
               key={item.href}
-              variant="ghost"
+              variant='ghost'
               className={cn(
                 "flex items-center justify-start gap-5 px-5 py-3 w-full",
                 isActive(item.href) &&
-                  "bg-gray-800 text-background hover:bg-gray-800 hover:text-background",
+                  "bg-gray-800 text-background hover:bg-gray-800 hover:text-background"
               )}
               title={item.title}
               onClick={handleLogoutClick}
             >
               <Icon />
-              <span className="hidden lg:inline">{item.label}</span>
+              <span className='hidden lg:inline'>{item.label}</span>
             </Button>
           );
         }
@@ -67,18 +71,18 @@ const Menubar = ({ className }: MenubarProps) => {
         return (
           <Button
             key={item.href}
-            variant="ghost"
+            variant='ghost'
             className={cn(
               "flex items-center justify-start gap-5 px-5 py-3",
               isActive(item.href) &&
-                "bg-gray-800 text-background hover:bg-gray-800 hover:text-background",
+                "bg-gray-800 text-background hover:bg-gray-800 hover:text-background"
             )}
             title={item.title}
             asChild
           >
             <Link href={item.href}>
               <Icon />
-              <span className="hidden lg:inline">{item.label}</span>
+              <span className='hidden lg:inline'>{item.label}</span>
             </Link>
           </Button>
         );
