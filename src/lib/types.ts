@@ -1,3 +1,5 @@
+import { Visibility } from "./enum";
+
 export type Conversation = {
   id: string;
   creator: User;
@@ -41,11 +43,17 @@ export type ConversationMessages = {
   messages: Message[];
 };
 
+export interface Attachment {
+  id: string;
+  url: string;
+}
+
 export type Post = {
   id: string;
   content: string;
   createdAt: string;
-  visibility: string;
+  updatedAt: string;
+  visibility: Visibility;
   author: User;
-  image?: string;
+  files?: Attachment[];
 };
