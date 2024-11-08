@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import axiosInstance from "@/lib/axiosInstance";
+import { User } from "@/lib/types";
 
 axios.defaults.withCredentials = true;
 
@@ -24,4 +25,11 @@ export const refreshToken = async () => {
 
 export const handleLogout = async () => {
   return await axiosInstance.post("http://localhost:8000/api/auth/logout");
+};
+
+export const getProfile = async (): Promise<User> => {
+  const response = await axiosInstance.get(
+    "http://localhost:8000/api/auth/profile"
+  );
+  return response.data;
 };

@@ -1,13 +1,15 @@
 "use client";
 
 import ConversationPanel from "@/components/conversations/conversation-panel";
-import { useContext, useEffect } from "react";
-import { SocketContext } from "@/providers/socket-provider";
+import { useEffect } from "react";
+import { useSocket } from "@/providers/socket-provider";
 import { useQueryClient } from "@tanstack/react-query";
 import { Conversation, Message, MessageEventPayload } from "@/lib/types";
+import { useParams } from "next/navigation";
 
 const ConversationIdPage = () => {
-  const socket = useContext(SocketContext);
+  const params = useParams<{ conversationId: string }>();
+  const socket = useSocket();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -56,12 +58,26 @@ const ConversationIdPage = () => {
         }
       );
     });
+    socket.on("onMessageDelete", (payload) => {
+      queryClient.setQueryData(
+        ["conversation-messages", payload.conversationId],
+        (oldData: { messages: Message[] }) => {
+          return {
+            ...oldData,
+            messages: oldData.messages.filter(
+              (msg) => msg.id !== payload.messageId
+            ),
+          };
+        }
+      );
+    });
 
     return () => {
       socket.off("onMessage");
       socket.off("onConversation");
+      socket.off("onMessageDelete");
     };
-  }, [queryClient, socket]);
+  }, [queryClient, socket, params.conversationId]);
 
   return <ConversationPanel />;
 };
