@@ -25,7 +25,7 @@ export const signupSchema = z.object({
       message: "Only letters and numbers are allowed.",
     })
     .trim(),
-  birthday: z.date(),
+  birthday: z.string(),
   gender: z.string(),
 });
 

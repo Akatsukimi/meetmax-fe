@@ -13,7 +13,7 @@ export const signup = async (data: {
   email: string;
   password: string;
   username: string;
-  birthday: Date;
+  birthday: string;
   gender: string;
 }) => {
   return await axios.post("http://localhost:8000/api/auth/signup", data);

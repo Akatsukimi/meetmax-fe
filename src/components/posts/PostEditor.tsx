@@ -15,7 +15,6 @@ import Image from "next/image";
 import avatar from "@/assets/avatar.png";
 import "./styleTipTap.css";
 import toast from "react-hot-toast";
-import { createPost } from "@/services/posts";
 import { useState } from "react";
 import {
   Select,
@@ -32,13 +31,15 @@ import { useDropzone } from "react-dropzone";
 import { Attachment } from "@/lib/types";
 import { uploadFile, uploadMultipleFiles } from "@/services/upload";
 import { FileType, Visibility } from "@/lib/enum";
+import useCreatePost from "@/app/hooks/useCreatePost";
 
 const PostEditor = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [visibility, setVisibility] = useState<Visibility>(Visibility.PUBLIC);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
-  const [showUpload, setShowUpload] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [showUpload, setShowUpload] = useState(false);
+  const [loadingAttachments, setLoadingAttachments] = useState(false);
+  const createPostMutation = useCreatePost();
 
   const editor = useEditor({
     extensions: [
@@ -52,23 +53,20 @@ const PostEditor = () => {
   });
 
   const handlePost = async () => {
-    try {
-      const content = editor?.getText() ?? "";
-      const fileIds = attachments.map((attachment) => attachment.id);
-      await createPost({ content, visibility, fileIds });
+    const content = editor?.getText() ?? "";
+    const fileIds = attachments.map((attachment) => attachment.id);
+    await createPostMutation.mutateAsync({ content, visibility, fileIds });
 
-      editor?.commands.clearContent();
-      setAttachments([]);
-      toast.success("Post created successfully");
-      setOpen(false);
-    } catch (error) {
-      toast.error(`Create post failed: ${error}`);
-    }
+    setOpen(false);
+    editor?.commands.setContent("");
+    setAttachments([]);
   };
 
   // Handle dropped files and convert them to URLs
   const handleDrop = async (acceptedFiles: File[]): Promise<void> => {
-    setLoading(true);
+    setShowUpload(false);
+    setLoadingAttachments(true);
+
     try {
       if (acceptedFiles.length === 1) {
         const newFile = await uploadFile({
@@ -87,10 +85,8 @@ const PostEditor = () => {
       toast.error(`File upload failed: ${error}`);
       return;
     } finally {
-      setLoading(false);
+      setLoadingAttachments(false);
     }
-
-    setShowUpload(false);
   };
 
   // Clear all attachments
@@ -179,7 +175,7 @@ const PostEditor = () => {
           </div>
         )}
 
-        {loading && (
+        {loadingAttachments && (
           <div className="flex justify-center mt-4">
             <Loader className="animate-spin" size={32} />
           </div>
@@ -207,9 +203,9 @@ const PostEditor = () => {
                 <Image
                   src={attachment.url}
                   alt="Attachment preview"
-                  width={1000}
-                  height={100}
-                  className="w-full h-auto object-cover rounded-md"
+                  width={500}
+                  height={500}
+                  className="aspect-[500/500] object-cover w-full rounded-md"
                 />
                 {attachments.length > 6 && index === 5 && (
                   <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-md">

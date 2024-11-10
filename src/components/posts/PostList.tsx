@@ -1,22 +1,13 @@
 "use client";
 
-import { getPosts } from "@/services/posts";
-import { useQuery } from "@tanstack/react-query";
 import { Loader } from "lucide-react";
 import toast from "react-hot-toast";
 import { useEffect } from "react";
-import Post from "./Post";
+import PostCard from "./PostCard";
+import useFetchPosts from "@/app/hooks/useFetchPosts";
 
 const PostList = () => {
-  const {
-    data: posts,
-    error,
-    isLoading: postLoading,
-  } = useQuery<Post[]>({
-    queryKey: ["posts"],
-    queryFn: getPosts,
-    staleTime: Infinity,
-  });
+  const { data: posts, isLoading, error } = useFetchPosts();
 
   useEffect(() => {
     if (error) {
@@ -24,7 +15,7 @@ const PostList = () => {
     }
   }, [error]);
 
-  if (postLoading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center w-full h-full">
         <Loader size={32} className="animate-spin" />
@@ -35,8 +26,7 @@ const PostList = () => {
   return (
     <div className="space-y-8 my-7">
       {posts?.map((post) => (
-        // eslint-disable-next-line react/jsx-key -- key is provided by Post component
-        <Post post={post} className="" />
+        <PostCard key={post.id} post={post} className="" />
       ))}
     </div>
   );

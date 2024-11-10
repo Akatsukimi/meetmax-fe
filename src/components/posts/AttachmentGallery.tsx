@@ -17,6 +17,7 @@ const AttachmentGallery = ({ attachments }: AttachmentGalleryProps) => {
           width={476}
           height={268}
           className="aspect-[476/268] object-cover w-full rounded-md"
+          unoptimized
         />
       </div>
     );
@@ -33,6 +34,7 @@ const AttachmentGallery = ({ attachments }: AttachmentGalleryProps) => {
               className={`aspect-[238/268] object-cover w-full ${
                 index === 0 ? "rounded-l-md" : "rounded-r-md"
               }`}
+              unoptimized
             />
           </div>
         ))}
@@ -48,6 +50,7 @@ const AttachmentGallery = ({ attachments }: AttachmentGalleryProps) => {
             width={476}
             height={268}
             className="aspect-[476/268] object-cover w-full"
+            unoptimized
           />
         </div>
 
@@ -77,6 +80,7 @@ const AttachmentGallery = ({ attachments }: AttachmentGalleryProps) => {
           width={476}
           height={268}
           className="aspect-[476/268] object-cover w-full rounded-t-md"
+          unoptimized
         />
       </div>
 
@@ -89,6 +93,7 @@ const AttachmentGallery = ({ attachments }: AttachmentGalleryProps) => {
               width={476}
               height={268}
               className="aspect-[238/268] object-cover rounded-b-md"
+              unoptimized
             />
             {/* Overlay for the last image if there are more than 4 */}
             {attachments.length > 4 && index === 2 && (

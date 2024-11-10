@@ -11,7 +11,7 @@ export type Conversation = {
 export type User = {
   id: string;
   email: string;
-  avatar?: string;
+  avatar?: string | null;
   username: string;
 };
 
@@ -48,6 +48,13 @@ export interface Attachment {
   url: string;
 }
 
+export type LikeUser = {
+  id: string;
+  userId: string;
+  username: string;
+  updatedAt: string;
+};
+
 export type Post = {
   id: string;
   content: string;
@@ -55,5 +62,6 @@ export type Post = {
   updatedAt: string;
   visibility: Visibility;
   author: User;
-  files?: Attachment[];
+  files: Attachment[];
+  likes: LikeUser[];
 };

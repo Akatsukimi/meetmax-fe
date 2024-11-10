@@ -40,7 +40,7 @@ const SignupForm = () => {
       email: "",
       password: "",
       username: "",
-      birthday: new Date(),
+      birthday: new Date().toISOString(),
       gender: "male",
     },
   });
@@ -145,7 +145,9 @@ const SignupForm = () => {
                         <Calendar
                           mode="single"
                           captionLayout="dropdown-buttons"
-                          selected={field.value}
+                          selected={
+                            field.value ? new Date(field.value) : undefined
+                          }
                           onSelect={field.onChange}
                           fromYear={1960}
                           toYear={2030}
