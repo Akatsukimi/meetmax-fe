@@ -12,23 +12,44 @@ import { VisibilityIcons } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Ellipsis, Heart, MessageCircleMore, Share2 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import AttachmentGallery from "./AttachmentGallery";
+import useLikePost from "@/app/hooks/useLikePost";
+import { useState } from "react";
+import LikeListModal from "@/components/modals/like-list-modal";
 
 interface PostCardProps {
   post: Post;
-  className: string;
 }
 
-const PostCard = ({ post, className }: PostCardProps) => {
-  console.log("🚀 ~ PostCard ~ post:", post);
+const PostCard = ({ post }: PostCardProps) => {
+  const { mutate: likePost } = useLikePost(post.id);
+  const [likeDialogOpen, setLikeDialogOpen] = useState(false);
+
+  const likeText = (() => {
+    if (!post.likes || post.likes.length === 0) return "";
+
+    if (post.isLikedByCurrentUser) {
+      return (
+        "You" +
+        (post.remainingLikeCount > 0
+          ? ` and ${post.remainingLikeCount} others`
+          : "")
+      );
+    } else {
+      const firstLikeUsername = post.likes[0]?.username;
+      return (
+        firstLikeUsername +
+        (post.remainingLikeCount > 0
+          ? ` and ${post.remainingLikeCount} others`
+          : "")
+      );
+    }
+  })();
+
   return (
     <article
       key={post.id}
-      className={cn(
-        "p-4 rounded-lg bg-white shadow-sm flex flex-col gap-5",
-        className
-      )}
+      className="p-4 rounded-lg bg-white shadow-sm flex flex-col gap-5"
     >
       <div className="flex gap-4">
         <Image
@@ -94,16 +115,12 @@ const PostCard = ({ post, className }: PostCardProps) => {
 
         <div className="mt-4.5 space-y-3.5">
           <div className="flex items-center text-gray-500 text-sm">
-            <span className="mr-2">
-              {post.likes?.length > 0 && (
-                <>
-                  <strong>{post.likes[0].username}</strong>
-                  {post.likes.length > 1 && (
-                    <strong> and {post.likes.length - 1} others</strong>
-                  )}
-                </>
-              )}
-            </span>
+            <strong
+              className="mr-2 hover:underline cursor-pointer"
+              onClick={() => setLikeDialogOpen(true)}
+            >
+              {likeText && <>{likeText}</>}
+            </strong>
             <div className="ml-auto">
               {/* {post.comments.length} comments • {post.shares.length} shares */}
               10 comments • 5 shares
@@ -113,9 +130,18 @@ const PostCard = ({ post, className }: PostCardProps) => {
           <Separator />
 
           <div className="flex justify-between">
-            <Button variant="ghost">
-              <Heart />
-              Like
+            <Button variant="ghost" onClick={() => likePost()}>
+              <Heart
+                className={`${
+                  post.isLikedByCurrentUser &&
+                  "fill-red-500 text-secondary-foreground"
+                }`}
+              />
+              <span
+                className={`${post.isLikedByCurrentUser && "text-red-500"}`}
+              >
+                Like
+              </span>
             </Button>
             <Button variant="ghost">
               <MessageCircleMore />
@@ -128,6 +154,12 @@ const PostCard = ({ post, className }: PostCardProps) => {
           </div>
         </div>
       </div>
+
+      <LikeListModal
+        isOpen={likeDialogOpen}
+        onClose={() => setLikeDialogOpen(false)}
+        postId={post.id}
+      />
     </article>
   );
 };

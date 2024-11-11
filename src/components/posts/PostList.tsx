@@ -5,9 +5,11 @@ import toast from "react-hot-toast";
 import { useEffect } from "react";
 import PostCard from "./PostCard";
 import useFetchPosts from "@/app/hooks/useFetchPosts";
+import { useAuth } from "@/providers/auth-provider";
 
 const PostList = () => {
-  const { data: posts, isLoading, error } = useFetchPosts();
+  const { user } = useAuth();
+  const { data: posts, isLoading, error } = useFetchPosts({ user });
 
   useEffect(() => {
     if (error) {
@@ -26,7 +28,7 @@ const PostList = () => {
   return (
     <div className="space-y-8 my-7">
       {posts?.map((post) => (
-        <PostCard key={post.id} post={post} className="" />
+        <PostCard key={post.id} post={post} />
       ))}
     </div>
   );

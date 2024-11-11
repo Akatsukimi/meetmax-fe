@@ -9,3 +9,7 @@ export enum Visibility {
   PUBLIC = "public",
   ONLY_ME = "onlyMe",
 }
+
+export enum QueryKeyFeed {
+  UserLikedPost = "users-liked-post",
+}

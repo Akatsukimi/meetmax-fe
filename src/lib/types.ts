@@ -48,11 +48,11 @@ export interface Attachment {
   url: string;
 }
 
-export type LikeUser = {
-  id: string;
+export type BaseLikedPostUser = Pick<User, "username">;
+
+export type LikedPostUser = BaseLikedPostUser & {
   userId: string;
-  username: string;
-  updatedAt: string;
+  avatar: string | null;
 };
 
 export type Post = {
@@ -63,5 +63,7 @@ export type Post = {
   visibility: Visibility;
   author: User;
   files: Attachment[];
-  likes: LikeUser[];
+  likes: BaseLikedPostUser[];
+  remainingLikeCount: number;
+  isLikedByCurrentUser: boolean;
 };
