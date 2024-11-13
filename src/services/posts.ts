@@ -1,5 +1,5 @@
 import axiosInstance from "@/lib/axiosInstance";
-import { LikedPostUser, Post } from "@/lib/types";
+import { Comment, LikedPostUser, Post } from "@/lib/types";
 import { createPostSchema } from "@/lib/validation";
 import { z } from "zod";
 
@@ -34,5 +34,34 @@ export const getUsersLikedPost = async (
   const response = await axiosInstance.get(`/api/like/post/${postId}`, {
     params: { page, limit },
   });
+  return response.data;
+};
+
+export const getCommentsPost = async (
+  postId: string,
+  parentCommentId: string | null,
+  page: number,
+  limit: number
+): Promise<{
+  data: Comment[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}> => {
+  const response = await axiosInstance.get(`/api/comment/post/${postId}`, {
+    params: { parentCommentId, page, limit },
+  });
+  return response.data;
+};
+
+export const createComment = async (
+  postId: string,
+  body: { content: string; parentCommentId: string | null }
+): Promise<Comment> => {
+  const response = await axiosInstance.post(
+    `/api/comment/create/${postId}`,
+    body
+  );
   return response.data;
 };

@@ -16,6 +16,7 @@ import AttachmentGallery from "./AttachmentGallery";
 import useLikePost from "@/app/hooks/useLikePost";
 import { useState } from "react";
 import LikeListModal from "@/components/modals/like-list-modal";
+import CommentListModal from "@/components/modals/comment-list-modal";
 
 interface PostCardProps {
   post: Post;
@@ -24,6 +25,7 @@ interface PostCardProps {
 const PostCard = ({ post }: PostCardProps) => {
   const { mutate: likePost } = useLikePost(post.id);
   const [likeDialogOpen, setLikeDialogOpen] = useState(false);
+  const [commentDialogOpen, setCommentDialogOpen] = useState(false);
 
   const likeText = (() => {
     if (!post.likes || post.likes.length === 0) return "";
@@ -116,14 +118,20 @@ const PostCard = ({ post }: PostCardProps) => {
         <div className="mt-4.5 space-y-3.5">
           <div className="flex items-center text-gray-500 text-sm">
             <strong
-              className="mr-2 hover:underline cursor-pointer"
+              className="hover:underline cursor-pointer"
               onClick={() => setLikeDialogOpen(true)}
             >
               {likeText && <>{likeText}</>}
             </strong>
-            <div className="ml-auto">
-              {/* {post.comments.length} comments • {post.shares.length} shares */}
-              10 comments • 5 shares
+            <div className="ml-auto flex justify-between gap-2">
+              <strong
+                className="hover:underline cursor-pointer"
+                onClick={() => setCommentDialogOpen(true)}
+              >
+                {post.commentCount} comments
+              </strong>
+              <span>•</span>
+              <strong>123 shares</strong>
             </div>
           </div>
 
@@ -133,14 +141,13 @@ const PostCard = ({ post }: PostCardProps) => {
             <Button variant="ghost" onClick={() => likePost()}>
               <Heart
                 className={`${
-                  post.isLikedByCurrentUser &&
-                  "fill-red-500 text-secondary-foreground"
+                  post.isLikedByCurrentUser && "fill-red-500 text-red-500"
                 }`}
               />
               <span
                 className={`${post.isLikedByCurrentUser && "text-red-500"}`}
               >
-                Like
+                Love
               </span>
             </Button>
             <Button variant="ghost">
@@ -158,6 +165,12 @@ const PostCard = ({ post }: PostCardProps) => {
       <LikeListModal
         isOpen={likeDialogOpen}
         onClose={() => setLikeDialogOpen(false)}
+        postId={post.id}
+      />
+
+      <CommentListModal
+        isOpen={commentDialogOpen}
+        onClose={() => setCommentDialogOpen(false)}
         postId={post.id}
       />
     </article>

@@ -37,6 +37,7 @@ const useLikePost = (postId: string) => {
                           id: Date.now().toString(),
                           userId: user.id,
                           username: user.username,
+                          avatar: user.avatar ?? null,
                           updatedAt: new Date().toISOString(),
                         },
                       ], // Like

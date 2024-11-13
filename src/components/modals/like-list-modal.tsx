@@ -23,7 +23,7 @@ interface LikeListModalProps {
 const LikeListModal = ({ isOpen, onClose, postId }: LikeListModalProps) => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: [QueryKeyFeed.UserLikedPost, postId],
+      queryKey: [QueryKeyFeed.UsersLikedPost, postId],
       queryFn: async ({ pageParam = 1 }) => {
         const response = await getUsersLikedPost(
           postId,

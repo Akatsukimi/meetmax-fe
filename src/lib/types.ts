@@ -68,9 +68,23 @@ export type Post = {
   visibility: Visibility;
   author: User;
   files: Attachment[];
-  likes: BaseLikedPostUser[];
+  likes: LikedPostUser[];
   remainingLikeCount: number;
   isLikedByCurrentUser: boolean;
+  commentCount: number;
+};
+
+export type Comment = {
+  id: string;
+  postId: string;
+  content: string;
+  user: {
+    id: string;
+    username: string;
+    avatar: string | null;
+  };
+  parentCommentId: string | null;
+  updatedAt: string;
 };
 
 export type Group = {
