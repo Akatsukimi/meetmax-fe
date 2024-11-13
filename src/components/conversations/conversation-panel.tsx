@@ -6,10 +6,10 @@ import ConversationHeader from "./conversation-header";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/providers/auth-provider";
 import MessageBody from "@/components/messages/message-body";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getConversationMessages } from "@/services/conversations";
-import { Conversation, Message } from "@/lib/types";
+import { Conversation, GroupMessage, Message } from "@/lib/types";
 import { formatConversationMessages } from "@/lib/format";
 import { useSocket } from "@/providers/socket-provider";
 
@@ -20,6 +20,10 @@ const ConversationPanel = () => {
     isEditing: boolean;
     message: Message | null;
   }>({ isEditing: false, message: null });
+  const [stateRelying, setStateRelying] = useState<{
+    isRelying: boolean;
+    message: Message | null;
+  }>({ isRelying: false, message: null });
   const socket = useSocket();
   const queryClient = useQueryClient();
   const [isRecipientTyping, setIsRecipientTyping] = useState(false);
@@ -96,7 +100,17 @@ const ConversationPanel = () => {
       : currentConversation.creator);
 
   const handleReplyClick = (message: Message) => {
+    setStateRelying({ isRelying: true, message });
+    handleCloseEditing();
+  };
+
+  const handleCloseRelying = () => {
+    setStateRelying({ isRelying: false, message: null });
+  };
+
+  const handleEditClick = (message: Message) => {
     setStateEditing({ isEditing: true, message });
+    handleCloseRelying();
   };
 
   const handleCloseEditing = () => {
@@ -120,6 +134,7 @@ const ConversationPanel = () => {
           )}
           user={user}
           onReplyClick={handleReplyClick}
+          onEditClick={handleEditClick}
         />
       )}
       <Separator />
@@ -128,6 +143,8 @@ const ConversationPanel = () => {
           sendTypingStatus={sendTypingStatus}
           stateEditing={stateEditing}
           setStateEditing={handleCloseEditing}
+          stateRelying={stateRelying}
+          setStateReplying={handleCloseRelying}
         />
       </div>
     </div>
