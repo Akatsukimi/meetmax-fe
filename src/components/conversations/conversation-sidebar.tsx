@@ -10,14 +10,13 @@ import {
   differenceInWeeks,
 } from "date-fns";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Conversation, Group } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/providers/auth-provider";
 import { getRecipientFromConversation } from "@/lib/format";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageSquareLock, Users } from "lucide-react";
-import { useEffect, useLayoutEffect, useState } from "react";
 import { useActiveTabStore } from "@/stores/active-tab-message.store";
 
 const formatDateLabel = (dateStr: Date) => {
@@ -72,31 +71,31 @@ const ConversationSidebar = () => {
     <Tabs
       value={activeTab}
       onValueChange={setActiveTab}
-      className='flex-grow w-full h-full'
+      className="flex-grow w-full h-full"
     >
-      <TabsList className='grid w-full grid-cols-2'>
+      <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger
-          value='conversations'
+          value="conversations"
           onClick={() =>
             router.push(`/messages/conversations/${conversations[0].id}`)
           }
         >
-          <MessageSquareLock size={16} className='mr-2' />
-          <span className='hidden md:block'>Private</span>
+          <MessageSquareLock size={16} className="mr-2" />
+          <span className="hidden md:block">Private</span>
         </TabsTrigger>
         <TabsTrigger
-          value='groups'
+          value="groups"
           onClick={() => router.push(`/messages/groups/${groups[0].id}`)}
         >
-          <Users size={16} className='mr-2' />
-          <span className='hidden md:block'>Groups</span>
+          <Users size={16} className="mr-2" />
+          <span className="hidden md:block">Groups</span>
         </TabsTrigger>
       </TabsList>
       <TabsContent
-        value='conversations'
-        className='flex-1 h-full overflow-hidden'
+        value="conversations"
+        className="flex-1 h-full overflow-hidden"
       >
-        <ScrollArea className='flex-1 h-full overflow-auto'>
+        <ScrollArea className="flex-1 h-full overflow-auto">
           {conversations.map((conversation: Conversation) => {
             const recipient = getRecipientFromConversation(conversation, user);
             return (
@@ -111,19 +110,21 @@ const ConversationSidebar = () => {
                   router.push(`/messages/conversations/${conversation.id}`)
                 }
               >
-                <Avatar className='size-10'>
-                  <AvatarImage src={conversation.recipient.avatar} />
+                <Avatar className="size-10">
+                  <AvatarImage
+                    src={conversation.recipient.avatar || undefined}
+                  />
                   <AvatarFallback>
                     {recipient?.username.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <div className='flex flex-col w-full'>
-                  <p className='font-bold'>{recipient?.username}</p>
-                  <div className='flex items-center justify-between'>
-                    <p className='text-sm font-normal text-foreground/60'>
+                <div className="flex flex-col w-full">
+                  <p className="font-bold">{recipient?.username}</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-normal text-foreground/60">
                       {conversation.lastMessageSent?.content || "Content"}
                     </p>
-                    <p className='text-sm font-normal text-foreground/60'>
+                    <p className="text-sm font-normal text-foreground/60">
                       {formatDateLabel(conversation.lastMessageSent?.createdAt)}
                     </p>
                   </div>
@@ -133,8 +134,8 @@ const ConversationSidebar = () => {
           })}
         </ScrollArea>
       </TabsContent>
-      <TabsContent value='groups' className='flex-1 h-full overflow-hidden'>
-        <ScrollArea className='flex-1 h-full overflow-auto'>
+      <TabsContent value="groups" className="flex-1 h-full overflow-hidden">
+        <ScrollArea className="flex-1 h-full overflow-auto">
           {groups.map((group: Group) => {
             return (
               <div
@@ -145,19 +146,19 @@ const ConversationSidebar = () => {
                 key={group.id}
                 onClick={() => router.push(`/messages/groups/${group.id}`)}
               >
-                <Avatar className='size-10'>
+                <Avatar className="size-10">
                   <AvatarImage src={group.avatar} />
                   <AvatarFallback>
                     {group?.title?.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <div className='flex flex-col w-full'>
-                  <p className='font-bold'>{group?.title}</p>
-                  <div className='flex items-center justify-between'>
-                    <p className='text-sm font-normal text-foreground/60'>
+                <div className="flex flex-col w-full">
+                  <p className="font-bold">{group?.title}</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-normal text-foreground/60">
                       {group.lastMessageSent?.content || "Content"}
                     </p>
-                    <p className='text-sm font-normal text-foreground/60'>
+                    <p className="text-sm font-normal text-foreground/60">
                       {formatDateLabel(group.lastMessageSentAt)}
                     </p>
                   </div>

@@ -150,7 +150,7 @@ const PostCard = ({ post }: PostCardProps) => {
                 Love
               </span>
             </Button>
-            <Button variant="ghost">
+            <Button variant="ghost" onClick={() => setCommentDialogOpen(true)}>
               <MessageCircleMore />
               Comment
             </Button>
