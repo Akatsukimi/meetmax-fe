@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Content, EditorContent, useEditor } from "@tiptap/react";
@@ -10,46 +10,77 @@ import { Plugin, PluginKey } from "prosemirror-state";
 
 import "./styles.css";
 import { Button } from "../ui/button";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { createMessage } from "@/services/conversations";
 import { useMutation } from "@tanstack/react-query";
 import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 import { useOnClickOutside } from "usehooks-ts";
-import { Message } from "@/lib/types";
+import { GroupMessage, Message } from "@/lib/types";
 import { useAuth } from "@/providers/auth-provider";
+import { createGroupMessage } from "@/services/groups";
 
 interface IMessageEditorProps {
-  stateEditing: { isEditing: boolean; message: Message | null };
-  setStateEditing: (state: {
-    isEditing: boolean;
-    message: Message | null;
+  stateRelying: { isRelying: boolean; message: Message | GroupMessage | null };
+  setStateReplying: (state: {
+    isRelying: boolean;
+    message: Message | GroupMessage | null;
   }) => void;
   sendTypingStatus: () => void;
+  stateEditing: { isEditing: boolean; message: Message | GroupMessage | null };
+  setStateEditing: (state: {
+    isEditing: boolean;
+    message: Message | GroupMessage | null;
+  }) => void;
 }
 
 const MessageEditor = ({
+  stateRelying,
+  setStateReplying,
+  sendTypingStatus,
   stateEditing,
   setStateEditing,
-  sendTypingStatus,
 }: IMessageEditorProps) => {
   const { user } = useAuth();
-  const params = useParams<{ conversationId: string }>();
+  const params = useParams<{ conversationId: string; groupId: string }>();
+  const pathname = usePathname();
+  const emojiPickerRef = useRef(null);
+  const { isEditing, message: messageEditing } = stateEditing;
+  const { isRelying, message: messageReplying } = stateRelying;
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const { isEditing, message } = stateEditing;
-  const mutation = useMutation({
+  const createMessageMutation = useMutation({
     mutationFn: createMessage,
   });
-  const emojiPickerRef = useRef(null);
+  const createGroupMessageMutation = useMutation({
+    mutationFn: createGroupMessage,
+  });
+
+  const setEditorContent = (content: string) => {
+    editor?.commands.setContent(content);
+  };
+
+  useEffect(() => {
+    if (isEditing && messageEditing?.content) {
+      setEditorContent(messageEditing.content);
+    }
+  }, [isEditing, messageEditing]);
 
   const CustomStarterKit = StarterKit.extend({
     addKeyboardShortcuts() {
       return {
         Enter: ({ editor }) => {
           const input = editor?.getText({ blockSeparator: "\n" }) || "";
-          mutation.mutate({
-            conversationId: params.conversationId,
-            content: input,
-          });
+          if (pathname.includes("conversations")) {
+            console.log("submit conversation");
+            createMessageMutation.mutate({
+              conversationId: params.conversationId,
+              content: input,
+            });
+          } else {
+            createGroupMessageMutation.mutate({
+              groupId: params.groupId,
+              content: input,
+            });
+          }
           setShowEmojiPicker(false);
           editor?.commands.clearContent();
           return true;
@@ -86,9 +117,17 @@ const MessageEditor = ({
 
   const onSubmit = async () => {
     const input = editor?.getText({ blockSeparator: "\n" }) || "";
-    console.log("Submitted message:", input);
-    // await createMessage({conversationId: params.conversationId, content: input});
-    mutation.mutate({ conversationId: params.conversationId, content: input });
+    if (pathname.includes("conversations")) {
+      createMessageMutation.mutate({
+        conversationId: params.conversationId,
+        content: input,
+      });
+    } else {
+      createGroupMessageMutation.mutate({
+        groupId: params.groupId,
+        content: input,
+      });
+    }
     setShowEmojiPicker(false);
     editor?.commands.clearContent();
   };
@@ -104,22 +143,42 @@ const MessageEditor = ({
 
   return (
     <div className='space-y-2'>
-      {isEditing && (
+      {isRelying && (
         <div className='flex items-center justify-between'>
           <div className='flex items-start flex-col'>
             <p className='text-base'>
               Replying to{" "}
-              {message?.author.id === user?.id
+              {messageReplying?.author.id === user?.id
                 ? "yourself"
-                : `${message?.author.username}`}
+                : `${messageReplying?.author.username}`}
             </p>
-            <p className='text-sm text-foreground/70'>{message?.content}</p>
+            <p className='text-sm text-foreground/70'>
+              {messageReplying?.content}
+            </p>
           </div>
           <Button
             variant='ghost'
             className='rounded-full'
             size='iconSm'
-            onClick={() => setStateEditing({ isEditing: false, message: null })}
+            onClick={() =>
+              setStateReplying({ isRelying: false, message: null })
+            }
+          >
+            <X />
+          </Button>
+        </div>
+      )}
+      {isEditing && (
+        <div className='flex items-center justify-between'>
+          <p className='text-base'>Edit message</p>
+          <Button
+            variant='ghost'
+            className='rounded-full'
+            size='iconSm'
+            onClick={() => {
+              setStateEditing({ isEditing: false, message: null });
+              editor?.commands.clearContent();
+            }}
           >
             <X />
           </Button>

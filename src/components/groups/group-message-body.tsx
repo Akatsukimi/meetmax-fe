@@ -1,7 +1,7 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { differenceInMinutes, format, isThisWeek, isToday } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Message, User} from "@/lib/types";
+import { GroupMessage, User } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { EllipsisVertical, Reply, Smile } from "lucide-react";
@@ -12,16 +12,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteMessage } from "@/services/conversations";
 import { useParams } from "next/navigation";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {deleteGroupMessage} from "@/services/groups";
 
 interface IMessageBodyProps {
-  messages: Message[];
+  messages: GroupMessage[];
   user: User;
-  onReplyClick: (message: Message) => void;
-  onEditClick: (message: Message) => void;
+  onReplyClick: (message: GroupMessage) => void;
   isRecipientTyping: boolean;
+  onEditClick: (message: GroupMessage) => void;
 }
 
 const TIME_THRESHOLD = 15;
@@ -37,48 +37,48 @@ const formatDateLabel = (dateStr: string) => {
   return format(date, "MMM d, yyyy, h:mm a");
 };
 
-const MessageBody = ({
+const GroupMessageBody = ({
   messages,
   user,
   onReplyClick,
   isRecipientTyping,
-  onEditClick
+  onEditClick,
 }: IMessageBodyProps) => {
-  const params = useParams<{ conversationId: string }>();
+  const params = useParams<{ groupId: string }>();
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: deleteMessage,
-    onMutate: async ({ conversationId, messageId }) => {
+    mutationFn: deleteGroupMessage,
+    onMutate: async ({ groupId, messageId }) => {
       await queryClient.cancelQueries({
-        queryKey: ["conversation-messages", conversationId],
+        queryKey: ["group-messages", groupId],
       });
       const previousMessages = queryClient.getQueryData<{
-        messages: Message[];
-      }>(["conversation-messages", conversationId]);
+        messages: GroupMessage[];
+      }>(["group-messages", groupId]);
       queryClient.setQueryData(
-        ["conversation-messages", conversationId],
-        (old: { messages: Message[] } | undefined) => ({
-          ...old,
-          messages: old?.messages.filter(
-            (message: Message) => message.id !== messageId
-          ),
-        })
+          ["group-messages", groupId],
+          (old: { messages: GroupMessage[] } | undefined) => ({
+            ...old,
+            messages: old?.messages.filter(
+                (message: GroupMessage) => message.id !== messageId
+            ),
+          })
       );
       return { previousMessages };
     },
     onError: (error, variables, context) => {
       if (context?.previousMessages) {
         queryClient.setQueryData(
-          ["conversation-messages", variables.conversationId],
-          context.previousMessages
+            ["group-messages", variables.groupId],
+            context.previousMessages
         );
       }
     },
   });
 
-  const handleDeleteMessage = (messageId: string) => {
-    mutation.mutate({ conversationId: params.conversationId, messageId });
-  };
+  const handleDeleteGroupMessage = (messageId: string) => {
+    mutation.mutate({ groupId: params.groupId, messageId });
+  }
 
   const groupedMessages = messages?.reduce((groups, message) => {
     if (!message) return groups;
@@ -89,7 +89,7 @@ const MessageBody = ({
     }
     groups[dateKey].messages.unshift(message);
     return groups;
-  }, {} as Record<string, { time: string; messages: Message[] }>);
+  }, {} as Record<string, { time: string; messages: GroupMessage[] }>);
 
   return (
     <ScrollArea scrollToBottom={true} className='flex-1 px-4.5 py-2'>
@@ -192,10 +192,7 @@ const MessageBody = ({
                             <DropdownMenuItem className='cursor-pointer' onClick={() => onEditClick(message)}>
                               <span>Edit</span>
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className='cursor-pointer'
-                              onClick={() => handleDeleteMessage(message.id)}
-                            >
+                            <DropdownMenuItem className='cursor-pointer' onClick={() => handleDeleteGroupMessage(message.id)}>
                               <span>Unsent</span>
                             </DropdownMenuItem>
                           </>
@@ -237,4 +234,4 @@ const MessageBody = ({
   );
 };
 
-export default MessageBody;
+export default GroupMessageBody;

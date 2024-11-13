@@ -10,6 +10,8 @@ import { handleLogout } from "@/services/auth";
 import { useSocket } from "@/providers/socket-provider";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/providers/auth-provider";
+import React from "react";
+import { useActiveTabStore } from "@/stores/active-tab-message.store";
 
 interface MenubarProps {
   className?: string;
@@ -21,7 +23,7 @@ const Menubar = ({ className }: MenubarProps) => {
   const pathname = usePathname();
   const queryClient = useQueryClient();
   const { updateAuthUser } = useAuth();
-
+  const { activeTab } = useActiveTabStore();
   const isActive = (basePath: string) => {
     if (basePath === "/") {
       return pathname === "/";
@@ -39,6 +41,15 @@ const Menubar = ({ className }: MenubarProps) => {
       router.push("/login");
     } catch (error) {
       console.error("Logout failed", error);
+    }
+  };
+
+  const handleClick = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    href: string
+  ) => {
+    if (isActive(href)) {
+      event.preventDefault();
     }
   };
 
@@ -80,7 +91,12 @@ const Menubar = ({ className }: MenubarProps) => {
             title={item.title}
             asChild
           >
-            <Link href={item.href}>
+            <Link
+              href={
+                item.href === "/message" ? `/message/${activeTab}` : item.href
+              }
+              onClick={(event) => handleClick(event, item.href)}
+            >
               <Icon />
               <span className='hidden lg:inline'>{item.label}</span>
             </Link>
