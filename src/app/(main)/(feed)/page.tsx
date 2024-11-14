@@ -4,7 +4,7 @@ const FeedPage = () => {
   // const user = getSession();
   return (
     <div className="flex justify-between gap-7 w-full">
-      <PostFeed className="w-[60%]" />
+      <PostFeed className="w-[65%]" />
 
       <div className="flex-1 bg-slate-600">Suggestion</div>
     </div>

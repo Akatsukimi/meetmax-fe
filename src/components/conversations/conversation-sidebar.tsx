@@ -111,7 +111,9 @@ const ConversationSidebar = () => {
                 }
               >
                 <Avatar className='size-10'>
-                  <AvatarImage src={conversation.recipient.avatar} />
+                  <AvatarImage
+                    src={conversation.recipient.avatar || undefined}
+                  />
                   <AvatarFallback>
                     {recipient?.username.charAt(0).toUpperCase()}
                   </AvatarFallback>
@@ -122,7 +124,6 @@ const ConversationSidebar = () => {
                     <p className='text-sm font-normal text-foreground/60 truncate max-w-40'>
                       {conversation.lastMessageSent?.content || "Content"}
                     </p>
-                    <span className='size-0.5 bg-foreground/30 rounded-full mx-1'></span>
                     <p className='text-sm font-normal text-foreground/60'>
                       {formatDateLabel(conversation.lastMessageSent?.createdAt)}
                     </p>
@@ -157,7 +158,6 @@ const ConversationSidebar = () => {
                     <p className='text-sm font-normal text-foreground/60 truncate max-w-40'>
                       {group.lastMessageSent?.content || "..."}
                     </p>
-                    <span className='size-0.5 bg-foreground/30 rounded-full mx-1'></span>
                     <p className='text-sm font-normal text-foreground/60'>
                       {formatDateLabel(group.lastMessageSentAt)}
                     </p>

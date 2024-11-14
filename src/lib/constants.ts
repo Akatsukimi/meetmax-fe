@@ -1,3 +1,5 @@
+import React from "react";
+
 import {
   Bell,
   Earth,
@@ -7,6 +9,9 @@ import {
   Settings,
   User,
   UsersRound,
+  Globe,
+  Users,
+  Lock,
 } from "lucide-react";
 
 export const BACKEND_URL = process.env.BACKEND_URL;
@@ -62,3 +67,11 @@ export const MenuBar = [
     title: "Logout",
   },
 ];
+
+export const VisibilityIcons: {
+  [key: string]: JSX.Element;
+} = {
+  public: React.createElement(Globe, { className: "text-gray-500", size: 14 }),
+  friends: React.createElement(Users, { className: "text-gray-500", size: 14 }),
+  onlyMe: React.createElement(Lock, { className: "text-gray-500", size: 14 }),
+};

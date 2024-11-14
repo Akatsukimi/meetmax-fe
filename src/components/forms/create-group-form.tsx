@@ -66,7 +66,7 @@ const CreateGroupForm: FC<CreateGroupFormProps> = ({ setIsOpen }) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='w-full space-y-3'>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-3">
         {fields.map((field, index) => (
           <FormField
             key={field.id}
@@ -75,17 +75,17 @@ const CreateGroupForm: FC<CreateGroupFormProps> = ({ setIsOpen }) => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Username</FormLabel>
-                <div className='flex items-center gap-5'>
+                <div className="flex items-center gap-5">
                   <FormControl>
                     <Input
-                      placeholder='username'
-                      className='text-slate-900'
+                      placeholder="username"
+                      className="text-slate-900"
                       {...field}
                     />
                   </FormControl>
                   <Button
-                    type='button'
-                    variant='destructive'
+                    type="button"
+                    variant="destructive"
                     onClick={() => remove(index)}
                   >
                     X
@@ -96,19 +96,19 @@ const CreateGroupForm: FC<CreateGroupFormProps> = ({ setIsOpen }) => {
             )}
           />
         ))}
-        <Button type='button' onClick={() => append("")}>
+        <Button type="button" onClick={() => append("")}>
           Add Username
         </Button>
         <FormField
           control={form.control}
-          name='title'
+          name="title"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Title</FormLabel>
               <FormControl>
                 <Input
-                  placeholder='message'
-                  className='text-slate-900'
+                  placeholder="message"
+                  className="text-slate-900"
                   {...field}
                 />
               </FormControl>
@@ -116,7 +116,7 @@ const CreateGroupForm: FC<CreateGroupFormProps> = ({ setIsOpen }) => {
             </FormItem>
           )}
         />
-        <Button type='submit' className='w-full'>
+        <Button type="submit" className="w-full">
           Create group
         </Button>
       </form>
