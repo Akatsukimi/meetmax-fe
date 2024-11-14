@@ -122,12 +122,14 @@ const GroupMessageBody = ({
                 }`}
               >
                 {!isCurrentUser && !isCompact && (
-                  <Avatar className='size-10 mr-2'>
-                    <AvatarImage src={message.author.avatar} />
-                    <AvatarFallback>
-                      {message.author.username.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Hint side='left' label={message.author.username}>
+                    <Avatar className='size-10 mr-2'>
+                      <AvatarImage src={message.author.avatar} />
+                      <AvatarFallback>
+                        {message.author.username.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Hint>
                 )}
                 <div
                   className={cn(

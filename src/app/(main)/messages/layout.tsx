@@ -34,9 +34,9 @@ const MainLayout = ({
     <div className='flex flex-grow'>
       <div className='bg-gray-50 p-7.5  rounded-t-2xl flex-1'>
         <div className='flex h-full gap-x-7.5'>
-          <div className='flex flex-col h-full w-[340px] bg-background rounded-lg overflow-hidden'>
+          <div className='flex flex-col h-full md:w-[340px] w-24 bg-background rounded-lg overflow-hidden'>
             <div className='flex w-full items-center justify-between py-4 px-3 gap-5'>
-              <Input icon={Search} placeholder='Search' className='ps-9' />
+              <Input icon={Search} placeholder='Search' className='ps-9 hidden md:block' classNameIcon='hidden md:block' />
               {activeTab === "conversations" ? (
                 <CreateConversationModal />
               ) : (

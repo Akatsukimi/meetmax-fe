@@ -7,14 +7,15 @@ import { IconType } from "react-icons";
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   icon?: LucideIcon | IconType;
+  classNameIcon?: string;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, icon: Icon, ...props }, ref) => {
+  ({ className, classNameIcon, type, icon: Icon, ...props }, ref) => {
     return (
       <div className='relative w-full'>
         {Icon && (
-          <Icon className='absolute left-3 top-1/2 size-4 -translate-y-1/2 transform text-muted-foreground' />
+          <Icon className={cn('absolute left-3 top-1/2 size-4 -translate-y-1/2 transform text-muted-foreground', classNameIcon)} />
         )}
         <input
           type={type}

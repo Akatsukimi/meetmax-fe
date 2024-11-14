@@ -10,14 +10,13 @@ import {
   differenceInWeeks,
 } from "date-fns";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Conversation, Group } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/providers/auth-provider";
 import { getRecipientFromConversation } from "@/lib/format";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageSquareLock, Users } from "lucide-react";
-import { useEffect, useLayoutEffect, useState } from "react";
 import { useActiveTabStore } from "@/stores/active-tab-message.store";
 
 const formatDateLabel = (dateStr: Date) => {
@@ -74,7 +73,7 @@ const ConversationSidebar = () => {
       onValueChange={setActiveTab}
       className='flex-grow w-full h-full'
     >
-      <TabsList className='grid w-full grid-cols-2'>
+      <TabsList className='grid w-full grid-cols-1 md:grid-cols-2 h-fit gap-2'>
         <TabsTrigger
           value='conversations'
           onClick={() =>
@@ -117,12 +116,13 @@ const ConversationSidebar = () => {
                     {recipient?.username.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <div className='flex flex-col w-full'>
+                <div className='md:flex flex-col w-full hidden'>
                   <p className='font-bold'>{recipient?.username}</p>
-                  <div className='flex items-center justify-between'>
-                    <p className='text-sm font-normal text-foreground/60'>
+                  <div className='flex items-center justify-start'>
+                    <p className='text-sm font-normal text-foreground/60 truncate max-w-40'>
                       {conversation.lastMessageSent?.content || "Content"}
                     </p>
+                    <span className='size-0.5 bg-foreground/30 rounded-full mx-1'></span>
                     <p className='text-sm font-normal text-foreground/60'>
                       {formatDateLabel(conversation.lastMessageSent?.createdAt)}
                     </p>
@@ -151,12 +151,13 @@ const ConversationSidebar = () => {
                     {group?.title?.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <div className='flex flex-col w-full'>
+                <div className='md:flex flex-col w-full hidden'>
                   <p className='font-bold'>{group?.title}</p>
-                  <div className='flex items-center justify-between'>
-                    <p className='text-sm font-normal text-foreground/60'>
-                      {group.lastMessageSent?.content || "Content"}
+                  <div className='flex items-center justify-start'>
+                    <p className='text-sm font-normal text-foreground/60 truncate max-w-40'>
+                      {group.lastMessageSent?.content || "..."}
                     </p>
+                    <span className='size-0.5 bg-foreground/30 rounded-full mx-1'></span>
                     <p className='text-sm font-normal text-foreground/60'>
                       {formatDateLabel(group.lastMessageSentAt)}
                     </p>
