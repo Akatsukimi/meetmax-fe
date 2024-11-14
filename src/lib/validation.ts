@@ -25,7 +25,7 @@ export const signupSchema = z.object({
       message: "Only letters and numbers are allowed.",
     })
     .trim(),
-  birthday: z.date(),
+  birthday: z.string(),
   gender: z.string(),
 });
 
@@ -39,4 +39,5 @@ export const loginSchema = z.object({
 export const createPostSchema = z.object({
   content: z.string().min(1, { message: "Post content is required" }).trim(),
   visibility: z.string().optional(),
+  fileIds: z.array(z.string()).optional(),
 });

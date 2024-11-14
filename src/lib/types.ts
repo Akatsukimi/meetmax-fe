@@ -1,3 +1,5 @@
+import { Visibility } from "./enum";
+
 export type Conversation = {
   id: string;
   creator: User;
@@ -9,7 +11,7 @@ export type Conversation = {
 export type User = {
   id: string;
   email: string;
-  avatar?: string;
+  avatar?: string | null;
   username: string;
 };
 
@@ -46,13 +48,51 @@ export type ConversationMessages = {
   messages: Message[];
 };
 
+export interface Attachment {
+  id: string;
+  url: string;
+}
+
+export type BaseLikedPostUser = Pick<User, "username">;
+
+export type LikedPostUser = BaseLikedPostUser & {
+  userId: string;
+  avatar: string | null;
+};
+
+export type Pagination<T> = {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+};
+
 export type Post = {
   id: string;
   content: string;
   createdAt: string;
-  visibility: string;
+  updatedAt: string;
+  visibility: Visibility;
   author: User;
-  image?: string;
+  files: Attachment[];
+  likes: LikedPostUser[];
+  remainingLikeCount: number;
+  isLikedByCurrentUser: boolean;
+  commentCount: number;
+};
+
+export type Comment = {
+  id: string;
+  postId: string;
+  content: string;
+  user: {
+    id: string;
+    username: string;
+    avatar: string | null;
+  };
+  parentCommentId: string | null;
+  updatedAt: string;
 };
 
 export type Group = {
