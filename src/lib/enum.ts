@@ -11,6 +11,7 @@ export enum Visibility {
 }
 
 export enum QueryKeyFeed {
+  Posts = "posts",
   UsersLikedPost = "users-liked-post",
   CommentsPost = "comments-post",
 }

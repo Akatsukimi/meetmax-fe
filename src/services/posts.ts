@@ -1,5 +1,5 @@
 import axiosInstance from "@/lib/axiosInstance";
-import { Comment, LikedPostUser, Post } from "@/lib/types";
+import { Comment, LikedPostUser, Pagination, Post } from "@/lib/types";
 import { createPostSchema } from "@/lib/validation";
 import { z } from "zod";
 
@@ -10,8 +10,13 @@ export const createPost = async (
   return response.data;
 };
 
-export const getPosts = async (): Promise<Post[]> => {
-  const response = await axiosInstance.get("/api/posts");
+export const getPosts = async (
+  page: number,
+  limit: number
+): Promise<Pagination<Post>> => {
+  const response = await axiosInstance.get("/api/posts", {
+    params: { page, limit },
+  });
   return response.data;
 };
 
@@ -24,13 +29,7 @@ export const getUsersLikedPost = async (
   postId: string,
   page: number,
   limit: number
-): Promise<{
-  data: LikedPostUser[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}> => {
+): Promise<Pagination<LikedPostUser>> => {
   const response = await axiosInstance.get(`/api/like/post/${postId}`, {
     params: { page, limit },
   });
@@ -42,13 +41,7 @@ export const getCommentsPost = async (
   parentCommentId: string | null,
   page: number,
   limit: number
-): Promise<{
-  data: Comment[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}> => {
+): Promise<Pagination<Comment>> => {
   const response = await axiosInstance.get(`/api/comment/post/${postId}`, {
     params: { parentCommentId, page, limit },
   });

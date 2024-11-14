@@ -38,6 +38,7 @@ const LikeListModal = ({ isOpen, onClose, postId }: LikeListModalProps) => {
         }
       },
       initialPageParam: 1,
+      enabled: isOpen,
     });
 
   const { ref, inView } = useInView();

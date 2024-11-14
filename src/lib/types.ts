@@ -60,6 +60,14 @@ export type LikedPostUser = BaseLikedPostUser & {
   avatar: string | null;
 };
 
+export type Pagination<T> = {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+};
+
 export type Post = {
   id: string;
   content: string;

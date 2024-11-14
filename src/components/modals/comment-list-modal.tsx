@@ -129,7 +129,7 @@ const CommentListModal = ({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useGetComments(postId, null);
+  } = useGetComments(postId, null, isOpen);
 
   // Mutation for adding a new comment or reply
   const { mutateAsync: addCommentMutation, isPending } = useCreateComment(
@@ -242,6 +242,7 @@ const CommentListModal = ({
           />
           <div className="flex justify-end">
             <Button
+              className="rounded-full p-2 h-10 w-10"
               variant="default"
               onClick={handleAddComment}
               disabled={isPending}

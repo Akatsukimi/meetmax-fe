@@ -1,3 +1,4 @@
+import { QueryKeyFeed } from "@/lib/enum";
 import { Post } from "@/lib/types";
 import { useAuth } from "@/providers/auth-provider";
 import { likePost } from "@/services/posts";
@@ -14,16 +15,18 @@ const useLikePost = (postId: string) => {
     mutationFn: () => likePost(postId),
     onMutate: async () => {
       // Cancel any ongoing fetches for the post to avoid conflicts
-      await queryClient.cancelQueries({ queryKey: [`posts:${user.id}`] });
+      await queryClient.cancelQueries({
+        queryKey: [`${QueryKeyFeed.Posts}:${user.id}`],
+      });
 
       // Take a snapshot of the previous post data for rollback if needed
       const previousPosts = queryClient.getQueryData<Post[]>([
-        `posts:${user.id}`,
+        `${QueryKeyFeed.Posts}:${user.id}`,
       ]);
 
       // Optimistically update the like status in the cache
       queryClient.setQueryData<Post[]>(
-        [`posts:${user.id}`],
+        [`${QueryKeyFeed.Posts}:${user.id}`],
         (oldPosts: Post[] = []) =>
           oldPosts.map((post) =>
             post.id === postId
@@ -52,13 +55,16 @@ const useLikePost = (postId: string) => {
     onError: (_error, _variables, context) => {
       // Roll back to previous state if there’s an error
       if (context?.previousPosts) {
-        queryClient.setQueryData([`posts:${user.id}`], context.previousPosts);
+        queryClient.setQueryData(
+          [`${QueryKeyFeed.Posts}:${user.id}`],
+          context.previousPosts
+        );
       }
     },
     onSettled: () => {
       // Refetch posts to sync with server data
       queryClient.invalidateQueries({
-        queryKey: [`posts:${user.id}`],
+        queryKey: [`${QueryKeyFeed.Posts}:${user.id}`],
       });
     },
   });

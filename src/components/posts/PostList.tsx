@@ -6,10 +6,19 @@ import { useEffect } from "react";
 import PostCard from "./PostCard";
 import useFetchPosts from "@/app/hooks/useFetchPosts";
 import { useAuth } from "@/providers/auth-provider";
+import { useInView } from "react-intersection-observer";
 
 const PostList = () => {
   const { user } = useAuth();
-  const { data: posts, isLoading, error } = useFetchPosts({ user });
+  const {
+    data: posts,
+    isLoading,
+    error,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useFetchPosts({ user });
+  const { ref, inView } = useInView();
 
   useEffect(() => {
     if (error) {
@@ -17,19 +26,31 @@ const PostList = () => {
     }
   }, [error]);
 
-  if (isLoading) {
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      void fetchNextPage();
+    }
+  }, [fetchNextPage, inView, hasNextPage, isFetchingNextPage]);
+
+  if (isLoading && !posts) {
     return (
-      <div className="flex items-center justify-center w-full h-full">
-        <Loader size={32} className="animate-spin" />
+      <div className="flex justify-center items-center h-full w-full">
+        <Loader size="48" />
       </div>
     );
   }
 
   return (
     <div className="space-y-8 my-7">
-      {posts?.map((post) => (
-        <PostCard key={post.id} post={post} />
-      ))}
+      {posts?.pages.map((page) =>
+        page.data.map((post) => <PostCard key={post.id} post={post} />)
+      )}
+
+      {hasNextPage && (
+        <div ref={ref} className="flex justify-center items-center">
+          <Loader size="48" />
+        </div>
+      )}
     </div>
   );
 };

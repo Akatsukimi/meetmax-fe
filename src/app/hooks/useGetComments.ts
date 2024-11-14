@@ -2,7 +2,11 @@ import { QueryKeyFeed } from "@/lib/enum";
 import { getCommentsPost } from "@/services/posts";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-const useGetComments = (postId: string, parentCommentId: string | null) => {
+const useGetComments = (
+  postId: string,
+  parentCommentId: string | null,
+  isOpen: boolean
+) => {
   return useInfiniteQuery({
     queryKey: [QueryKeyFeed.CommentsPost, postId, parentCommentId],
     queryFn: async ({ pageParam = 1 }) => {
@@ -20,6 +24,7 @@ const useGetComments = (postId: string, parentCommentId: string | null) => {
       }
     },
     initialPageParam: 1,
+    enabled: isOpen,
   });
 };
 
