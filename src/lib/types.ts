@@ -51,6 +51,7 @@ export type ConversationMessages = {
 export interface Attachment {
   id: string;
   url: string;
+  mimetype: string;
 }
 
 export type BaseLikedPostUser = Pick<User, "username">;

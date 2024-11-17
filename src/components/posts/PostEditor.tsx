@@ -32,6 +32,7 @@ import { Attachment } from "@/lib/types";
 import { uploadFile, uploadMultipleFiles } from "@/services/upload";
 import { FileType, Visibility } from "@/lib/enum";
 import useCreatePost from "@/app/hooks/useCreatePost";
+import AttachmentGallery from "./AttachmentGallery";
 
 const PostEditor = () => {
   const [open, setOpen] = useState<boolean>(false);
@@ -128,7 +129,10 @@ const PostEditor = () => {
       </DialogTrigger>
 
       {/* Dialog Content: Create Post Modal */}
-      <DialogContent className="max-w-lg w-full p-6 rounded-lg bg-white">
+      <DialogContent
+        aria-describedby="create-post-modal"
+        className="max-w-2xl w-full p-6 rounded-lg bg-white max-h-[calc(100vh-150px)] overflow-y-scroll"
+      >
         <DialogHeader className="flex flex-row items-start justify-between">
           <DialogTitle className="text-secondary-foreground/70">
             Create a post
@@ -154,7 +158,7 @@ const PostEditor = () => {
         </DialogHeader>
 
         {/* Tiptap Editor */}
-        <div className="bg-secondary rounded-lg p-3 min-h-[150px] max-h-[calc(100vh-400px)] overflow-y-scroll">
+        <div className="bg-secondary rounded-lg p-3 min-h-[150px] max-h-[calc(100vh-600px)] overflow-y-scroll">
           <EditorContent editor={editor} className="h-full max-w-full" />
         </div>
 
@@ -182,14 +186,14 @@ const PostEditor = () => {
         )}
 
         {attachments.length > 0 && (
-          <div className="grid grid-cols-3 gap-1 mt-2 relative">
-            <div className="absolute left-0 top-0 z-10 flex gap-3">
-              <Button className="bg-secondary hover:bg-secondary text-secondary-foreground">
+          <div className="relative">
+            <div className="absolute left-0 -top-1 z-10 flex gap-3">
+              <Button className="bg-secondary hover:bg-secondary text-secondary-foreground flex items-center gap-1">
                 <Edit />
                 <span>Edit All</span>
               </Button>
               <Button
-                className="bg-secondary hover:bg-secondary text-secondary-foreground"
+                className="bg-secondary hover:bg-secondary text-secondary-foreground flex items-center gap-1"
                 {...getRootProps()}
               >
                 <input {...getInputProps()} />
@@ -198,28 +202,13 @@ const PostEditor = () => {
               </Button>
             </div>
 
-            {attachments.slice(0, 6).map((attachment, index) => (
-              <div key={index} className="relative">
-                <Image
-                  src={attachment.url}
-                  alt="Attachment preview"
-                  width={500}
-                  height={500}
-                  className="aspect-[500/500] object-cover w-full rounded-md"
-                />
-                {attachments.length > 6 && index === 5 && (
-                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-md">
-                    <span className="text-white font-bold text-lg">
-                      +{attachments.length - 6}
-                    </span>
-                  </div>
-                )}
-              </div>
-            ))}
+            <div className="">
+              <AttachmentGallery attachments={attachments} />
+            </div>
 
             <Button
               onClick={removeAttachments}
-              className="absolute -top-1 -right-1 rounded-full text-secondary-foreground bg-slate-500 hover:bg-slate-600 h-8 w-8"
+              className="absolute -top-1 right-0 rounded-full text-secondary-foreground bg-slate-500 hover:bg-slate-600 h-8 w-8 flex items-center justify-center"
               variant="outline"
               size="icon"
             >

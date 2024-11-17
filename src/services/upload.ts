@@ -9,6 +9,7 @@ export type UploadFileBody = {
 export type UploadFileResponse = {
   id: string;
   url: string;
+  mimetype: string;
 };
 
 export type UploadMultipleFilesBody = {
@@ -19,6 +20,7 @@ export type UploadMultipleFilesBody = {
 export type UploadMultipleFilesResponse = {
   id: string;
   url: string;
+  mimetype: string;
 }[];
 
 export const uploadFile = async (
