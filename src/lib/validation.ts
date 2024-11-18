@@ -37,7 +37,7 @@ export const loginSchema = z.object({
 });
 
 export const createPostSchema = z.object({
-  content: z.string().min(1, { message: "Post content is required" }).trim(),
+  content: z.string().trim().nullish(),
   visibility: z.string().optional(),
   fileIds: z.array(z.string()).optional(),
 });

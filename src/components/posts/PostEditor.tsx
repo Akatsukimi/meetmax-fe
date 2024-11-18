@@ -21,7 +21,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -36,7 +35,7 @@ import AttachmentGallery from "./AttachmentGallery";
 
 const PostEditor = () => {
   const [open, setOpen] = useState<boolean>(false);
-  const [visibility, setVisibility] = useState<Visibility>(Visibility.PUBLIC);
+  const [visibility, setVisibility] = useState<Visibility>();
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [showUpload, setShowUpload] = useState(false);
   const [loadingAttachments, setLoadingAttachments] = useState(false);
@@ -54,12 +53,17 @@ const PostEditor = () => {
   });
 
   const handlePost = async () => {
-    const content = editor?.getText() ?? "";
+    if (editor?.isEmpty && attachments.length === 0) {
+      toast.error("Post must have content or attachments");
+      return;
+    }
+
+    const content = editor?.getHTML();
     const fileIds = attachments.map((attachment) => attachment.id);
     await createPostMutation.mutateAsync({ content, visibility, fileIds });
 
     setOpen(false);
-    editor?.commands.setContent("");
+    editor?.commands.clearContent();
     setAttachments([]);
   };
 
@@ -140,6 +144,7 @@ const PostEditor = () => {
 
           <div className="!-mt-2.5 mr-10">
             <Select
+              value={visibility}
               onValueChange={(value) => setVisibility(value as Visibility)}
             >
               <SelectTrigger className="w-fit">
@@ -147,7 +152,6 @@ const PostEditor = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Visible for</SelectLabel>
                   <SelectItem value="friends">Friends</SelectItem>
                   <SelectItem value="public">Public</SelectItem>
                   <SelectItem value="onlyMe">Only me</SelectItem>

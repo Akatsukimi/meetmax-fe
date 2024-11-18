@@ -43,7 +43,9 @@ const PostList = () => {
   return (
     <div className="space-y-8 my-7">
       {posts?.pages.map((page) =>
-        page.data.map((post) => <PostCard key={post.id} post={post} />)
+        page.data.map((post) => (
+          <PostCard key={post.id} post={post} user={user} />
+        ))
       )}
 
       {hasNextPage && (

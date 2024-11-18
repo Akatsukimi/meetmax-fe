@@ -25,6 +25,10 @@ export const likePost = async (postId: string): Promise<Post> => {
   return response.data;
 };
 
+export const deletePost = async (postId: string): Promise<void> => {
+  await axiosInstance.delete(`/api/posts/${postId}`);
+};
+
 export const getUsersLikedPost = async (
   postId: string,
   page: number,

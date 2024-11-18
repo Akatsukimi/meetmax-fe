@@ -1,4 +1,4 @@
-import type { Post } from "@/lib/types";
+import type { Post, User } from "@/lib/types";
 import Image from "next/image";
 import avatar from "@/assets/avatar.png";
 import {
@@ -11,18 +11,21 @@ import { format, formatDistanceToNow } from "date-fns";
 import { VisibilityIcons } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Ellipsis, Heart, MessageCircleMore, Share2 } from "lucide-react";
+import { Heart, MessageCircleMore, Share2 } from "lucide-react";
 import AttachmentGallery from "./AttachmentGallery";
 import useLikePost from "@/app/hooks/useLikePost";
 import { useState } from "react";
 import LikeListModal from "@/components/modals/like-list-modal";
 import CommentListModal from "@/components/modals/comment-list-modal";
+import CustomPostMe from "./CustomPostMe";
+import CustomPost from "./CustomPost";
 
 interface PostCardProps {
   post: Post;
+  user: User | null;
 }
 
-const PostCard = ({ post }: PostCardProps) => {
+const PostCard = ({ post, user }: PostCardProps) => {
   const { mutate: likePost } = useLikePost(post.id);
   const [likeDialogOpen, setLikeDialogOpen] = useState(false);
   const [commentDialogOpen, setCommentDialogOpen] = useState(false);
@@ -102,9 +105,11 @@ const PostCard = ({ post }: PostCardProps) => {
           </div>
         </div>
 
-        <Button className="ml-auto" variant="ghost" size="icon">
-          <Ellipsis />
-        </Button>
+        {user?.id === post.author.id ? (
+          <CustomPostMe post={post} />
+        ) : (
+          <CustomPost post={post} />
+        )}
       </div>
 
       <div className="flex-1">
