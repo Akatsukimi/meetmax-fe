@@ -1,23 +1,33 @@
-"use client";
+'use client';
 
-import { useRef, useState, useEffect } from "react";
-import StarterKit from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
-import { Content, EditorContent, useEditor } from "@tiptap/react";
-import { Link, SendHorizontal, Smile, X } from "lucide-react";
-import Emoji, { gitHubEmojis } from "@tiptap-pro/extension-emoji";
-import { Plugin, PluginKey } from "prosemirror-state";
-
-import "./styles.css";
-import { Button } from "../ui/button";
-import { useParams, usePathname } from "next/navigation";
-import { createMessage } from "@/services/conversations";
-import { useMutation } from "@tanstack/react-query";
-import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
-import { useOnClickOutside } from "usehooks-ts";
-import { GroupMessage, Message } from "@/lib/types";
-import { useAuth } from "@/providers/auth-provider";
-import { createGroupMessage } from "@/services/groups";
+import { useRef, useState, useEffect, KeyboardEvent, FormEvent } from 'react';
+import { useParams, usePathname } from 'next/navigation';
+import { useMutation } from '@tanstack/react-query';
+import { useOnClickOutside } from 'usehooks-ts';
+import { useDropzone, FileRejection } from 'react-dropzone';
+import { createMessage } from '@/services/conversations';
+import { createGroupMessage } from '@/services/groups';
+import { uploadFileMessage } from '@/services/upload';
+import { useAuth } from '@/providers/auth-provider';
+import { Attachment, GroupMessage, Message } from '@/lib/types';
+import { FileType } from '@/lib/enum';
+import { Button } from '../ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import EmojiPicker, { EmojiStyle } from 'emoji-picker-react';
+import Hint from '@/components/shared/hint';
+import Image from 'next/image';
+import toast from 'react-hot-toast';
+import { cn } from '@/lib/utils';
+import {
+  CirclePlay,
+  FileText,
+  ImageUp,
+  Link,
+  SendHorizontal,
+  Smile,
+  X,
+  XIcon,
+} from 'lucide-react';
 
 interface IMessageEditorProps {
   stateRelying: { isRelying: boolean; message: Message | GroupMessage | null };
@@ -47,93 +57,102 @@ const MessageEditor = ({
   const { isEditing, message: messageEditing } = stateEditing;
   const { isRelying, message: messageReplying } = stateRelying;
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [message, setMessage] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
   const createMessageMutation = useMutation({
     mutationFn: createMessage,
   });
   const createGroupMessageMutation = useMutation({
     mutationFn: createGroupMessage,
   });
-
-  const setEditorContent = (content: string) => {
-    editor?.commands.setContent(content);
-  };
+  const uploadFileMessageMutation = useMutation({
+    mutationFn: uploadFileMessage,
+  });
 
   useEffect(() => {
     if (isEditing && messageEditing?.content) {
-      setEditorContent(messageEditing.content);
+      setMessage(messageEditing.content);
     }
   }, [isEditing, messageEditing]);
 
-  const CustomStarterKit = StarterKit.extend({
-    addKeyboardShortcuts() {
-      return {
-        Enter: ({ editor }) => {
-          const input = editor?.getText({ blockSeparator: "\n" }) || "";
-          if (pathname.includes("conversations")) {
-            console.log("submit conversation");
-            createMessageMutation.mutate({
-              conversationId: params.conversationId,
-              content: input,
-            });
-          } else {
-            createGroupMessageMutation.mutate({
-              groupId: params.groupId,
-              content: input,
-            });
+  useEffect(() => {
+    const handlePaste = async (event: ClipboardEvent) => {
+      const items = event.clipboardData?.items;
+      if (items) {
+        const files: File[] = [];
+        for (const item of items) {
+          if (item.kind === 'file') {
+            const file = item.getAsFile();
+            if (file) {
+              files.push(file);
+            }
           }
-          setShowEmojiPicker(false);
-          editor?.commands.clearContent();
-          return true;
-        },
-        "Shift-Enter": () => {
-          this.editor.commands.enter();
-          return true;
-        },
-      };
-    },
-    addProseMirrorPlugins() {
-      return [
-        new Plugin({
-          key: new PluginKey("sendTypingStatus"),
-          props: {
-            handleKeyDown: () => {
-              sendTypingStatus();
-              return false;
+        }
+        if (files.length > 0) {
+          uploadFileMessageMutation.mutate(
+            {
+              files,
+              type: pathname.includes('conversations')
+                ? FileType.MESSAGE
+                : FileType.GROUP_MESSAGE,
             },
-          },
-        }),
-      ];
-    },
-  });
+            {
+              onSuccess: (newFiles) => {
+                setAttachments((prev) => [...prev, ...newFiles]);
+              },
+              onError: (error) => {
+                toast.error(`File upload failed: ${error}`);
+              },
+            },
+          );
+        }
+      }
+    };
 
-  const editor = useEditor({
-    extensions: [
-      CustomStarterKit.configure({ bold: false, italic: false }),
-      Placeholder.configure({ placeholder: "Type something here..." }),
-      Emoji.configure({ emojis: gitHubEmojis, enableEmoticons: true }),
-    ],
-    autofocus: true,
-  });
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.addEventListener('paste', handlePaste);
+    }
 
-  const onSubmit = async () => {
-    const input = editor?.getText({ blockSeparator: "\n" }) || "";
-    if (pathname.includes("conversations")) {
+    return () => {
+      if (textarea) {
+        textarea.removeEventListener('paste', handlePaste);
+      }
+    };
+  }, [pathname, uploadFileMessageMutation]);
+
+  const onSubmit = async (e?: FormEvent<HTMLFormElement>) => {
+    if (e) e.preventDefault();
+    if (!message.trim() && attachments.length === 0) return;
+
+    if (pathname.includes('conversations')) {
       createMessageMutation.mutate({
         conversationId: params.conversationId,
-        content: input,
-      });
-    } else {
-      createGroupMessageMutation.mutate({
-        groupId: params.groupId,
-        content: input,
+        content: message,
+        attachments,
       });
     }
+    if (pathname.includes('groups')) {
+      createGroupMessageMutation.mutate({
+        groupId: params.groupId,
+        content: message,
+        attachments,
+      });
+    }
+
     setShowEmojiPicker(false);
-    editor?.commands.clearContent();
+    setAttachments([]);
+    setMessage('');
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
   };
 
-  const handleEmojiClick = (event: { emoji: Content }) => {
-    editor?.chain().focus().insertContent(event.emoji).run();
+  const handleEmojiClick = (event: { emoji: string }) => {
+    setMessage((prev) => prev + event.emoji);
+    sendTypingStatus();
   };
 
   const handleClickOutside = () => {
@@ -141,25 +160,99 @@ const MessageEditor = ({
   };
   useOnClickOutside(emojiPickerRef, handleClickOutside);
 
+  const handleDrop = async (acceptedFiles: File[]): Promise<void> => {
+    if (pathname.includes('conversations')) {
+      uploadFileMessageMutation.mutate(
+        {
+          files: acceptedFiles,
+          type: FileType.MESSAGE,
+        },
+        {
+          onSuccess: (newFiles) => {
+            setAttachments((prev) => [...prev, ...newFiles]);
+          },
+          onError: (error) => {
+            toast.error(`File upload failed: ${error}`);
+          },
+        },
+      );
+    }
+    if (pathname.includes('groups')) {
+      uploadFileMessageMutation.mutate(
+        {
+          files: acceptedFiles,
+          type: FileType.GROUP_MESSAGE,
+        },
+        {
+          onSuccess: (newFiles) => {
+            setAttachments((prev) => [...prev, ...newFiles]);
+          },
+          onError: (error) => {
+            toast.error(`File upload failed: ${error}`);
+          },
+        },
+      );
+    }
+  };
+
+  const handleDropRejected = (fileRejections: FileRejection[]) => {
+    const errors = fileRejections.map(({ file, errors }) => {
+      return `${file.name} - ${errors
+        .map((e: { message: string }) => e.message)
+        .join(', ')}`;
+    });
+    toast.error(`File upload failed: ${errors.join(', ')}`);
+  };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: handleDrop,
+    onDropRejected: handleDropRejected,
+    multiple: true,
+    noClick: true,
+  });
+  const {
+    getRootProps: getRootPropsAsClick,
+    getInputProps: getInputPropsAsClick,
+  } = useDropzone({
+    onDrop: handleDrop,
+    onDropRejected: handleDropRejected,
+    multiple: true,
+    noDrag: true,
+  });
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      onSubmit();
+    }
+  };
+
+  const handleInput = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  };
+
   return (
-    <div className='space-y-2'>
+    <div className="space-y-2">
       {isRelying && (
-        <div className='flex items-center justify-between'>
-          <div className='flex items-start flex-col'>
-            <p className='text-base'>
-              Replying to{" "}
+        <div className="flex items-center justify-between">
+          <div className="flex items-start flex-col">
+            <p className="text-base">
+              Replying to{' '}
               {messageReplying?.author.id === user?.id
-                ? "yourself"
+                ? 'yourself'
                 : `${messageReplying?.author.username}`}
             </p>
-            <p className='text-sm text-foreground/70'>
+            <p className="text-sm text-foreground/70">
               {messageReplying?.content}
             </p>
           </div>
           <Button
-            variant='ghost'
-            className='rounded-full'
-            size='iconSm'
+            variant="ghost"
+            className="rounded-full"
+            size="iconSm"
             onClick={() =>
               setStateReplying({ isRelying: false, message: null })
             }
@@ -169,70 +262,149 @@ const MessageEditor = ({
         </div>
       )}
       {isEditing && (
-        <div className='flex items-center justify-between'>
-          <p className='text-base'>Edit message</p>
+        <div className="flex items-center justify-between">
+          <p className="text-base">Edit message</p>
           <Button
-            variant='ghost'
-            className='rounded-full'
-            size='iconSm'
+            variant="ghost"
+            className="rounded-full"
+            size="iconSm"
             onClick={() => {
               setStateEditing({ isEditing: false, message: null });
-              editor?.commands.clearContent();
+              setMessage('');
             }}
           >
             <X />
           </Button>
         </div>
       )}
-      <div className=' flex items-center gap-5'>
-        <div className='relative flex-1 max-w-[633px]'>
-          <div className='absolute right-3 top-1.5 flex items-center z-10'>
-            <Button variant='ghost' size='icon'>
-              <Link />
-            </Button>
-            <Button
-              variant='ghost'
-              size='icon'
-              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-            >
-              <Smile />
-            </Button>
-            {showEmojiPicker && (
-              <div
-                ref={emojiPickerRef}
-                className='absolute bottom-full right-0 mb-2'
+      {attachments.length > 0 && (
+        <div className="relative p-2 flex items-center gap-2">
+          <div className="relative flex w-[350px] sm:w-[400px] md:w-[550px] xl:w-[680px] overflow-x-auto gap-2 p-2">
+            <Hint label="Upload another files" duration={0}>
+              <Button
+                {...getRootPropsAsClick()}
+                variant="outline"
+                className="flex items-center justify-center rounded-lg size-[52px] cursor-pointer"
               >
-                <EmojiPicker
-                  emojiStyle={EmojiStyle.FACEBOOK}
-                  onEmojiClick={handleEmojiClick}
-                />
+                <input {...getInputPropsAsClick()} className="hidden" />
+                <ImageUp className="text-foreground/40" size={40} />
+              </Button>
+            </Hint>
+            {attachments.map((attachment, index) => (
+              <div
+                key={index}
+                className={cn(
+                  'relative h-[52px] w-[52px] flex-shrink-0 group',
+                  attachment.mimetype.includes('application') && 'w-[104px]',
+                )}
+              >
+                <Hint label="Remove image">
+                  <button
+                    onClick={() =>
+                      setAttachments(attachments.filter((_, i) => i !== index))
+                    }
+                    className="hidden group-hover:flex rounded-full bg-black/70 hover:bg-black absolute -top-2.5 -right-2.5 text-white size-6 z-[4] border-2 border-white items-center justify-center"
+                  >
+                    <XIcon className="size-3.5" />
+                  </button>
+                </Hint>
+                {attachment.mimetype.includes('image') && (
+                  <Image
+                    src={attachment.url}
+                    alt="uploaded"
+                    fill
+                    className="rounded-xl overflow-hidden border object-cover"
+                  />
+                )}
+                {attachment.mimetype.includes('video') && (
+                  <div className="relative h-full w-full">
+                    <CirclePlay className="absolute top-0 z-10" />
+                    <video
+                      src={attachment.url}
+                      controls
+                      className="rounded-xl w-[52px] h-[52px] overflow-hidden border object-cover"
+                    />
+                  </div>
+                )}
+                {attachment.mimetype.includes('application') && (
+                  <div className="flex items-center justify-center rounded-xl h-[52px] w-[104px] overflow-hidden border object-cover bg-accent px-1 gap-1">
+                    <FileText size={32} />
+                    <p className="text-xs truncate">{attachment.name}</p>
+                  </div>
+                )}
               </div>
-            )}
+            ))}
           </div>
-          <EditorContent editor={editor} />
         </div>
-        {editor?.getText({ blockSeparator: "\n" }) === "" ? (
-          <Button
-            onClick={() => {
-              editor?.chain().focus().setEmoji("fire").run();
-              onSubmit();
-            }}
-            variant='ghost'
-            size='icon'
-            className='p-3 size-12 text-2xl'
+      )}
+
+      <form onSubmit={onSubmit}>
+        <div
+          {...getRootProps()}
+          className="flex items-center justify-between gap-5"
+        >
+          <div
+            className={`relative flex-1 max-w-[633px] border border-dashed rounded-xl ${
+              isDragActive ? 'border-primary' : 'border-transparent'
+            }`}
           >
-            🔥
-          </Button>
-        ) : (
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center z-10">
+              <Button
+                {...getRootPropsAsClick()}
+                variant="ghost"
+                size="icon"
+                type="button"
+              >
+                <input {...getInputPropsAsClick()} className="hidden" />
+                <Link />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                type="button"
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              >
+                <Smile />
+              </Button>
+              {showEmojiPicker && (
+                <div
+                  ref={emojiPickerRef}
+                  className="absolute bottom-full right-0 mb-2"
+                >
+                  <EmojiPicker
+                    emojiStyle={EmojiStyle.FACEBOOK}
+                    onEmojiClick={handleEmojiClick}
+                  />
+                </div>
+              )}
+            </div>
+            <input {...getInputProps()} />
+            <Textarea
+              ref={textareaRef}
+              value={message}
+              onChange={(e) => {
+                setMessage(e.target.value);
+                sendTypingStatus();
+              }}
+              onKeyDown={handleKeyDown}
+              onInput={handleInput}
+              placeholder="Type a message..."
+              className="flex-grow resize-none overflow-hidden min-h-[40px] max-h-[200px] my-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
+              rows={1}
+              autoFocus
+            />
+          </div>
           <Button
-            onClick={onSubmit}
-            variant='ghost'
-            className='bg-primary/10 p-4 size-12'
+            disabled={message.trim() === '' && attachments.length === 0}
+            type="submit"
+            size="icon"
+            className="flex-shrink-0"
           >
-            <SendHorizontal className='text-primary' />
+            <SendHorizontal className="h-4 w-4" />
+            <span className="sr-only">Send message</span>
           </Button>
-        )}
-      </div>
+        </div>
+      </form>
     </div>
   );
 };

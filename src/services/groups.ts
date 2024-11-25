@@ -1,15 +1,15 @@
-import { CreateGroupParams, Group } from "@/lib/types";
-import axiosInstance from "@/lib/axiosInstance";
+import { Attachment, CreateGroupParams, Group } from '@/lib/types';
+import axiosInstance from '@/lib/axiosInstance';
 
 export const getGroups = async (): Promise<Group[]> => {
-  const response = await axiosInstance.get("/api/groups");
+  const response = await axiosInstance.get('/api/groups');
   return response.data;
 };
 
 export const createGroup = async (
-  params: CreateGroupParams
+  params: CreateGroupParams,
 ): Promise<Group> => {
-  const response = await axiosInstance.post("/api/groups", params);
+  const response = await axiosInstance.post('/api/groups', params);
   return response.data;
 };
 
@@ -21,12 +21,15 @@ export const getGroupMessages = async (groupId: string) => {
 export const createGroupMessage = async ({
   groupId,
   content,
+  attachments,
 }: {
   groupId: string;
-  content: string;
+  content?: string;
+  attachments?: Attachment[];
 }) => {
   const response = await axiosInstance.post(`/api/groups/${groupId}/messages`, {
     content,
+    attachments,
   });
   return response.data;
 };
@@ -39,7 +42,7 @@ export const deleteGroupMessage = async ({
   messageId: string;
 }) => {
   const response = await axiosInstance.delete(
-    `/api/groups/${groupId}/messages/${messageId}`
+    `/api/groups/${groupId}/messages/${messageId}`,
   );
   return response.data;
 };

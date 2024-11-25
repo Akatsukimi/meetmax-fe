@@ -1,4 +1,4 @@
-import { Visibility } from "./enum";
+import { Visibility } from './enum';
 
 export type Conversation = {
   id: string;
@@ -11,7 +11,7 @@ export type Conversation = {
 export type User = {
   id: string;
   email: string;
-  avatar?: string | null;
+  avatar?: string;
   username: string;
 };
 
@@ -20,16 +20,27 @@ export type Message = {
   content: string;
   createdAt: string;
   author: User;
+  attachments: AttachmentResponse[];
+};
+
+export type AttachmentResponse = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  mimetype: string;
+  url: string;
+  name: string;
 };
 
 export type LastMessageSent = {
   id: string;
   content: string;
   createdAt: Date;
+  attachments: Attachment[];
 };
 
 export type MessageEventPayload = {
-  message: Message;
+  messages: Message[];
   conversation: Conversation;
 };
 
@@ -51,10 +62,11 @@ export type ConversationMessages = {
 export interface Attachment {
   id: string;
   url: string;
+  name?: string;
   mimetype: string;
 }
 
-export type BaseLikedPostUser = Pick<User, "username">;
+export type BaseLikedPostUser = Pick<User, 'username'>;
 
 export type LikedPostUser = BaseLikedPostUser & {
   userId: string;
@@ -115,7 +127,7 @@ export type GroupMessage = {
   createdAt: string;
   author: User;
   group: Group;
-  attachments?: MessageAttachment[];
+  attachments: Attachment[];
 };
 
 export type MessageAttachment = {
@@ -128,7 +140,7 @@ export type GroupMessages = {
 };
 
 export type GroupMessageEventPayload = {
-  message: GroupMessage;
+  messages: GroupMessage[];
   group: Group;
 };
 

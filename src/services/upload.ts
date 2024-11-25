@@ -1,5 +1,5 @@
-import axiosInstance from "@/lib/axiosInstance";
-import { FileType } from "@/lib/enum";
+import axiosInstance from '@/lib/axiosInstance';
+import { FileType } from '@/lib/enum';
 
 export type UploadFileBody = {
   file: File;
@@ -24,15 +24,15 @@ export type UploadMultipleFilesResponse = {
 }[];
 
 export const uploadFile = async (
-  body: UploadFileBody
+  body: UploadFileBody,
 ): Promise<UploadFileResponse> => {
   const formData = new FormData();
-  formData.append("file", body.file);
-  formData.append("type", body.type);
+  formData.append('file', body.file);
+  formData.append('type', body.type);
 
-  const response = await axiosInstance.post("/api/file/upload", formData, {
+  const response = await axiosInstance.post('/api/file/upload', formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      'Content-Type': 'multipart/form-data',
     },
   });
 
@@ -40,22 +40,42 @@ export const uploadFile = async (
 };
 
 export const uploadMultipleFiles = async (
-  body: UploadMultipleFilesBody
+  body: UploadMultipleFilesBody,
 ): Promise<UploadMultipleFilesResponse> => {
   const formData = new FormData();
   body.files.forEach((file) => {
-    formData.append("file", file);
+    formData.append('file', file);
   });
-  formData.append("type", body.type);
+  formData.append('type', body.type);
 
   const response = await axiosInstance.post(
-    "/api/file/multiple-upload",
+    '/api/file/multiple-upload',
     formData,
     {
       headers: {
-        "Content-Type": "multipart/form-data",
+        'Content-Type': 'multipart/form-data',
       },
-    }
+    },
+  );
+
+  return response.data;
+};
+
+export const uploadFileMessage = async (body: UploadMultipleFilesBody) => {
+  const formData = new FormData();
+  body.files.forEach((file) => {
+    formData.append('file', file);
+  });
+  formData.append('type', body.type);
+
+  const response = await axiosInstance.post(
+    '/api/file/upload-message',
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    },
   );
 
   return response.data;
