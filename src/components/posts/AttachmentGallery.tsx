@@ -7,8 +7,6 @@ interface AttachmentGalleryProps {
 }
 
 const AttachmentGallery = ({ attachments }: AttachmentGalleryProps) => {
-  if (!attachments || attachments.length === 0) return null;
-
   if (attachments.length === 1) {
     if (attachments[0].mimetype.startsWith("video")) {
       return (

@@ -15,7 +15,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const routes = ['/login', '/signup', '/reset', '/verify']
+  const routes = ["/login", "/signup", "/reset", "/verify"];
   const pathname = usePathname();
   const noFetchRoute = routes.includes(pathname);
 
@@ -23,7 +23,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     queryKey: ["profile"],
     queryFn: getProfile,
     enabled: !noFetchRoute,
-    staleTime: Infinity
+    staleTime: Infinity,
   });
 
   useEffect(() => {

@@ -28,12 +28,14 @@ import { Button } from "@/components/ui/button";
 import { Edit, ImageUp, Loader, SmileIcon, Video, X } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { Attachment } from "@/lib/types";
-import { uploadFile, uploadMultipleFiles } from "@/services/upload";
+import { uploadFile } from "@/services/upload";
 import { FileType, Visibility } from "@/lib/enum";
 import useCreatePost from "@/app/hooks/useCreatePost";
 import AttachmentGallery from "./AttachmentGallery";
+import { useAuth } from "@/providers/auth-provider";
 
 const PostEditor = () => {
+  const { user } = useAuth();
   const [open, setOpen] = useState<boolean>(false);
   const [visibility, setVisibility] = useState<Visibility>();
   const [attachments, setAttachments] = useState<Attachment[]>([]);
@@ -59,8 +61,12 @@ const PostEditor = () => {
     }
 
     const content = editor?.getHTML();
-    const fileIds = attachments.map((attachment) => attachment.id);
-    await createPostMutation.mutateAsync({ content, visibility, fileIds });
+    const attachmentIds = attachments.map((attachment) => attachment.id);
+    await createPostMutation.mutateAsync({
+      content,
+      visibility,
+      attachmentIds,
+    });
 
     setOpen(false);
     editor?.commands.clearContent();
@@ -73,19 +79,11 @@ const PostEditor = () => {
     setLoadingAttachments(true);
 
     try {
-      if (acceptedFiles.length === 1) {
-        const newFile = await uploadFile({
-          file: acceptedFiles[0],
-          type: FileType.POST_IMAGE,
-        });
-        setAttachments((prev) => [...prev, newFile]);
-      } else {
-        const newFiles = await uploadMultipleFiles({
-          files: acceptedFiles,
-          type: FileType.POST_IMAGE,
-        });
-        setAttachments((prev) => [...prev, ...newFiles]);
-      }
+      const newFiles = await uploadFile({
+        files: acceptedFiles,
+        type: FileType.POST,
+      });
+      setAttachments((prev) => [...prev, ...newFiles]);
     } catch (error) {
       toast.error(`File upload failed: ${error}`);
       return;
@@ -117,9 +115,9 @@ const PostEditor = () => {
       <DialogTrigger asChild>
         <div className="flex items-center p-4 bg-white border-gray-300 rounded-lg cursor-pointer">
           <Image
-            src={avatar}
+            src={user?.avatar || avatar}
             alt="avatar"
-            className="rounded-full mr-3"
+            className="rounded-full mr-3 aspect-[1/1]"
             width={40}
             height={40}
           />
@@ -189,7 +187,7 @@ const PostEditor = () => {
           </div>
         )}
 
-        {attachments.length > 0 && (
+        {!loadingAttachments && attachments.length > 0 && (
           <div className="relative">
             <div className="absolute left-0 -top-1 z-10 flex gap-3">
               <Button className="bg-secondary hover:bg-secondary text-secondary-foreground flex items-center gap-1">

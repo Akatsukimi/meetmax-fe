@@ -39,5 +39,5 @@ export const loginSchema = z.object({
 export const createPostSchema = z.object({
   content: z.string().trim().nullish(),
   visibility: z.string().optional(),
-  fileIds: z.array(z.string()).optional(),
+  attachmentIds: z.array(z.string()).optional(),
 });

@@ -1,13 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import SearchField from "./search-field";
-import getSession from "@/lib/getSession";
 import Image from "next/image";
 import Logo from "@/assets/logo.png";
 import { Button } from "../ui/button";
 import { MessageSquareDot } from "lucide-react";
+import { useAuth } from "@/providers/auth-provider";
 
 const HeaderBar = () => {
-  const user = getSession();
+  const { user } = useAuth();
 
   return (
     <header className="sticky top-0 z-10 bg-background">
@@ -41,11 +43,11 @@ const HeaderBar = () => {
           <span>{user?.username}</span>
           {user?.avatar ? (
             <Image
-              src={Logo}
-              width={42}
-              height={42}
-              alt="logo"
-              className="object-cover rounded overflow-hidden flex-shrink"
+              src={user.avatar}
+              width={40}
+              height={40}
+              alt="avatar"
+              className="object-cover rounded aspect-[1/1]"
             />
           ) : (
             <div className="bg-primary size-10 flex items-center justify-center rounded text-white">

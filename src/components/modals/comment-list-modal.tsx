@@ -237,7 +237,7 @@ const CommentListModal = ({
                 handleAddComment();
               }
             }}
-            className="flex-1"
+            className="flex-1 focus-visible:ring-offset-0"
             ref={inputRef}
           />
           <div className="flex justify-end">

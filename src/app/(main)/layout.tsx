@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import HeaderBar from "@/components/shared/header-bar";
 import Menubar from "@/components/shared/menubar";
 import RightBar from "@/components/shared/right-bar";
+
+export const metadata: Metadata = {
+  title: "Meetmax",
+  description:
+    "Meetmax is a social media platform that connects people with friends, family, and others who share similar interests.",
+};
 
 const MainLayout = ({
   children,

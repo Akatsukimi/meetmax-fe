@@ -62,7 +62,7 @@ const PostCard = ({ post, user }: PostCardProps) => {
           alt="avatar"
           width={50}
           height={50}
-          className="rounded-full"
+          className="rounded-full aspect-[1/1] object-cover"
         />
 
         <div className="flex items-center justify-between">
@@ -118,7 +118,9 @@ const PostCard = ({ post, user }: PostCardProps) => {
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
 
-        {post.files && <AttachmentGallery attachments={post.files} />}
+        {post.attachments?.length > 0 && (
+          <AttachmentGallery attachments={post.attachments} />
+        )}
 
         <div className="mt-4.5 space-y-3.5">
           <div className="flex items-center text-gray-500 text-sm">

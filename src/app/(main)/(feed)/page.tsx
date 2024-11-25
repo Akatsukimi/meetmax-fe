@@ -1,12 +1,11 @@
 import PostFeed from "@/components/posts/PostFeed";
+import Suggestion from "@/components/profile/Suggestion";
 
 const FeedPage = () => {
-  // const user = getSession();
   return (
     <div className="flex justify-between gap-7 w-full">
-      <PostFeed className="w-[65%]" />
-
-      <div className="flex-1 bg-slate-600">Suggestion</div>
+      <PostFeed className="flex-1" />
+      <Suggestion className="w-1/3" />
     </div>
   );
 };

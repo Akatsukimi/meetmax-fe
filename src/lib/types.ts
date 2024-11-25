@@ -1,5 +1,15 @@
 import { Visibility } from "./enum";
 
+export type ErrorServerResponse = {
+  response: {
+    data: {
+      error: string;
+      message: string[];
+      statusCode: number;
+    };
+  };
+};
+
 export type Conversation = {
   id: string;
   creator: User;
@@ -76,7 +86,7 @@ export type Post = {
   updatedAt: string;
   visibility: Visibility;
   author: User;
-  files: Attachment[];
+  attachments: Attachment[];
   likes: LikedPostUser[];
   remainingLikeCount: number;
   isLikedByCurrentUser: boolean;

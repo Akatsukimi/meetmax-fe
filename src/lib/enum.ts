@@ -1,7 +1,7 @@
 export enum FileType {
   AVATAR = "avatar",
   MESSAGE = "message",
-  POST_IMAGE = "post-image",
+  POST = "post",
 }
 
 export enum Visibility {
@@ -14,4 +14,8 @@ export enum QueryKeyFeed {
   Posts = "posts",
   UsersLikedPost = "users-liked-post",
   CommentsPost = "comments-post",
+}
+
+export enum QueryKeyProfile {
+  Profile = "profile",
 }

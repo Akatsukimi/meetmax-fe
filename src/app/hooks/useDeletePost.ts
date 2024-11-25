@@ -1,5 +1,5 @@
 import { QueryKeyFeed } from "@/lib/enum";
-import { Post } from "@/lib/types";
+import { ErrorServerResponse, Post } from "@/lib/types";
 import { useAuth } from "@/providers/auth-provider";
 import { deletePost } from "@/services/posts";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -21,8 +21,8 @@ export default function useDeletePost(postId: string) {
         queryKey: [`${QueryKeyFeed.Posts}:${user?.id}`],
       });
     },
-    onError: (error) => {
-      toast.error(`Delete post failed: ${error}`);
+    onError: (error: ErrorServerResponse) => {
+      toast.error(`Delete post failed: ${error.response.data.message[0]}`);
     },
   });
 }

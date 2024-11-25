@@ -15,7 +15,7 @@ export const signup = async (data: {
   username: string;
   birthday: string;
   gender: string;
-}) => {
+}): Promise<User> => {
   return await axios.post("http://localhost:8000/api/auth/signup", data);
 };
 
