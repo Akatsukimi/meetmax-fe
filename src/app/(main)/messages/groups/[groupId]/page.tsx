@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import GroupPanel from "@/components/groups/group-panel";
-import { useParams } from "next/navigation";
-import { useSocket } from "@/providers/socket-provider";
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import GroupPanel from '@/components/groups/group-panel';
+import { useParams } from 'next/navigation';
+import { useSocket } from '@/providers/socket-provider';
+import { useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import {
   AddGroupUserMessagePayload,
   Group,
@@ -13,7 +13,7 @@ import {
   GroupMessageEventPayload,
   GroupParticipantLeftPayload,
   RemoveGroupUserMessagePayload,
-} from "@/lib/types";
+} from '@/lib/types';
 
 const GroupIdPage = () => {
   const params = useParams<{ groupId: string }>();
@@ -21,66 +21,66 @@ const GroupIdPage = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    socket.on("onGroupMessage", (payload: GroupMessageEventPayload) => {
-      const { group, message } = payload;
-      console.log("Group Message Received");
-      console.log("Group Message Received, group", group);
-      console.log("Group Message Received, message", message);
+    socket.on('onGroupMessage', (payload: GroupMessageEventPayload) => {
+      const { group, messages } = payload;
+      console.log('Group Message Received');
+      console.log('Group Message Received, group', group);
+      console.log('Group Message Received, message', messages);
       queryClient.setQueryData(
-        ["group-messages", group.id],
+        ['group-messages', group.id],
         (oldData: { messages: GroupMessage[] }) => {
           return {
             ...oldData,
-            messages: [...oldData.messages, message],
+            messages: [...oldData.messages, ...messages],
           };
-        }
+        },
       );
 
       // Update the last message sent in the group in the cache
-      queryClient.setQueryData(["groups"], (oldGroups: Group[] | undefined) => {
-        console.log("oldGroups", oldGroups);
+      queryClient.setQueryData(['groups'], (oldGroups: Group[] | undefined) => {
+        console.log('oldGroups', oldGroups);
         if (!oldGroups) return [];
         const updatedGroups = oldGroups.map((grp) =>
           grp.id === group.id
             ? {
                 ...grp,
-                lastMessageSent: message,
+                lastMessageSent: group.lastMessageSent,
                 lastMessageSentAt: new Date(),
               }
-            : grp
+            : grp,
         );
-        console.log("updatedGroups 1", updatedGroups);
+        console.log('updatedGroups 1', updatedGroups);
         const groupIndex = updatedGroups.findIndex(
-          (grp) => grp.id === group.id
+          (grp) => grp.id === group.id,
         );
-        console.log("groupIndex", groupIndex);
+        console.log('groupIndex', groupIndex);
         if (groupIndex > -1) {
           const [updatedGroup] = updatedGroups.splice(groupIndex, 1);
           updatedGroups.unshift(updatedGroup);
         }
-        console.log("updatedGroups 2", updatedGroups);
+        console.log('updatedGroups 2', updatedGroups);
         return updatedGroups;
       });
     });
 
-    socket.on("onGroupCreate", (payload: Group) => {
-      queryClient.setQueryData(["groups"], (oldGroups: Group[] | undefined) => {
+    socket.on('onGroupCreate', (payload: Group) => {
+      queryClient.setQueryData(['groups'], (oldGroups: Group[] | undefined) => {
         if (!oldGroups) return [payload];
         return [payload, ...oldGroups];
       });
     });
 
-    socket.on("onGroupMessageDelete", (payload: GroupMessageDeletePayload) => {
+    socket.on('onGroupMessageDelete', (payload: GroupMessageDeletePayload) => {
       queryClient.setQueryData(
-        ["group-messages", payload.groupId],
+        ['group-messages', payload.groupId],
         (oldData: { messages: GroupMessage[] }) => {
           return {
             ...oldData,
             messages: oldData.messages.filter(
-              (msg) => msg.id !== payload.messageId
+              (msg) => msg.id !== payload.messageId,
             ),
           };
-        }
+        },
       );
     });
 
@@ -88,8 +88,8 @@ const GroupIdPage = () => {
      * Adds the group for the user being added
      * to the group.
      */
-    socket.on("onGroupUserAdd", (payload: AddGroupUserMessagePayload) => {
-      console.log("onGroupUserAdd");
+    socket.on('onGroupUserAdd', (payload: AddGroupUserMessagePayload) => {
+      console.log('onGroupUserAdd');
       console.log(payload);
     });
 
@@ -98,41 +98,41 @@ const GroupIdPage = () => {
      * so that they can also see the participant
      */
     socket.on(
-      "onGroupReceivedNewUser",
+      'onGroupReceivedNewUser',
       ({ group }: AddGroupUserMessagePayload) => {
-        console.log("Received onGroupReceivedNewUser");
-      }
+        console.log('Received onGroupReceivedNewUser');
+      },
     );
 
     socket.on(
-      "onGroupRecipientRemoved",
+      'onGroupRecipientRemoved',
       ({ group }: RemoveGroupUserMessagePayload) => {
-        console.log("onGroupRecipientRemoved");
-      }
+        console.log('onGroupRecipientRemoved');
+      },
     );
 
-    socket.on("onGroupRemoved", (payload: RemoveGroupUserMessagePayload) => {});
+    socket.on('onGroupRemoved', (payload: RemoveGroupUserMessagePayload) => {});
 
     socket.on(
-      "onGroupParticipantLeft",
+      'onGroupParticipantLeft',
       ({ group, userId }: GroupParticipantLeftPayload) => {
-        console.log("onGroupParticipantLeft received");
-      }
+        console.log('onGroupParticipantLeft received');
+      },
     );
 
-    socket.on("onGroupOwnerUpdate", (group: Group) => {
-      console.log("received onGroupOwnerUpdate");
+    socket.on('onGroupOwnerUpdate', (group: Group) => {
+      console.log('received onGroupOwnerUpdate');
     });
 
     return () => {
-      socket.off("onGroupMessage");
-      socket.off("onGroupCreate");
-      socket.off("onGroupUserAdd");
-      socket.off("onGroupReceivedNewUser");
-      socket.off("onGroupRecipientRemoved");
-      socket.off("onGroupRemoved");
-      socket.off("onGroupParticipantLeft");
-      socket.off("onGroupOwnerUpdate");
+      socket.off('onGroupMessage');
+      socket.off('onGroupCreate');
+      socket.off('onGroupUserAdd');
+      socket.off('onGroupReceivedNewUser');
+      socket.off('onGroupRecipientRemoved');
+      socket.off('onGroupRemoved');
+      socket.off('onGroupParticipantLeft');
+      socket.off('onGroupOwnerUpdate');
     };
   }, [params.groupId, queryClient, socket]);
 

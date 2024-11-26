@@ -1,6 +1,6 @@
-import { Attachment } from "@/lib/types";
-import Image from "next/image";
-import VideoPlayer from "@/components/shared/video-player";
+import { Attachment } from '@/lib/types';
+import Image from 'next/image';
+import VideoPlayer from '@/components/shared/video-player';
 
 interface AttachmentGalleryProps {
   attachments: Attachment[];
@@ -8,7 +8,7 @@ interface AttachmentGalleryProps {
 
 const AttachmentGallery = ({ attachments }: AttachmentGalleryProps) => {
   if (attachments.length === 1) {
-    if (attachments[0].mimetype.startsWith("video")) {
+    if (attachments[0].mimetype.startsWith('video')) {
       return (
         <VideoPlayer
           sources={[
@@ -38,10 +38,13 @@ const AttachmentGallery = ({ attachments }: AttachmentGalleryProps) => {
   }
 
   if (attachments.length === 2) {
+  }
+
+  if (attachments.length === 2) {
     return (
       <div className="grid grid-cols-2 gap-1">
         {attachments.map((attachment, index) => {
-          if (attachment.mimetype.startsWith("video")) {
+          if (attachment.mimetype.startsWith('video')) {
             return (
               <VideoPlayer
                 key={index}
@@ -75,9 +78,12 @@ const AttachmentGallery = ({ attachments }: AttachmentGalleryProps) => {
   }
 
   if (attachments.length === 3) {
+  }
+
+  if (attachments.length === 3) {
     return (
       <div className="grid grid-cols-1 gap-1">
-        {attachments[0].mimetype.startsWith("video") ? (
+        {attachments[0].mimetype.startsWith('video') ? (
           <VideoPlayer
             sources={[
               {
@@ -103,7 +109,7 @@ const AttachmentGallery = ({ attachments }: AttachmentGalleryProps) => {
 
         <div className="grid grid-cols-2 gap-1">
           {attachments.slice(1, 3).map((attachment, index) => {
-            if (attachment.mimetype.startsWith("video")) {
+            if (attachment.mimetype.startsWith('video')) {
               return (
                 <VideoPlayer
                   key={index}
@@ -139,7 +145,7 @@ const AttachmentGallery = ({ attachments }: AttachmentGalleryProps) => {
 
   return (
     <div className="grid grid-cols-1 gap-1">
-      {attachments[0].mimetype.startsWith("video") ? (
+      {attachments[0].mimetype.startsWith('video') ? (
         <VideoPlayer
           sources={[
             {
@@ -166,7 +172,7 @@ const AttachmentGallery = ({ attachments }: AttachmentGalleryProps) => {
       <div className="grid grid-cols-3 gap-1">
         {attachments.slice(1, 4).map((attachment, index) => (
           <div key={index} className="relative">
-            {attachment.mimetype.startsWith("video") ? (
+            {attachment.mimetype.startsWith('video') ? (
               <VideoPlayer
                 sources={[
                   {
