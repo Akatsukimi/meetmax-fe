@@ -31,28 +31,6 @@ export const uploadFile = async (
   return response.data;
 };
 
-export const uploadMultipleFiles = async (
-  body: UploadFileBody,
-): Promise<UploadFileResponse[]> => {
-  const formData = new FormData();
-  body.files.forEach((file) => {
-    formData.append('files', file);
-  });
-  formData.append('type', body.type);
-
-  const response = await axiosInstance.post(
-    '/api/file/multiple-upload',
-    formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    },
-  );
-
-  return response.data;
-};
-
 export const uploadFileMessage = async (body: UploadFileBody) => {
   const formData = new FormData();
   body.files.forEach((file) => {
@@ -60,15 +38,11 @@ export const uploadFileMessage = async (body: UploadFileBody) => {
   });
   formData.append('type', body.type);
 
-  const response = await axiosInstance.post(
-    '/api/file/upload-message',
-    formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+  const response = await axiosInstance.post('/api/file/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
     },
-  );
+  });
 
   return response.data;
 };

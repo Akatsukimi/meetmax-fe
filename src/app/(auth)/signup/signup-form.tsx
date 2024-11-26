@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+'use client';
 
-import { z } from "zod";
-import { format } from "date-fns";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import { AtSign, CalendarIcon, CircleUser, Lock } from "lucide-react";
-import { IoMale, IoFemale } from "react-icons/io5";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from 'zod';
+import { format } from 'date-fns';
+import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
+import { AtSign, CalendarIcon, CircleUser, Lock } from 'lucide-react';
+import { IoMale, IoFemale } from 'react-icons/io5';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 import {
   Form,
@@ -16,40 +16,40 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from '@/components/ui/form';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { signupSchema } from "@/lib/validation";
-import { Calendar } from "@/components/ui/calendar";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { signup } from "@/services/auth";
-import toast from "react-hot-toast";
-import { PasswordInput } from "@/components/ui/password-input";
+} from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { signupSchema } from '@/lib/validation';
+import { Calendar } from '@/components/ui/calendar';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { signup } from '@/services/auth';
+import toast from 'react-hot-toast';
+import { PasswordInput } from '@/components/ui/password-input';
 
 const SignupForm = () => {
   const navigate = useRouter();
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      email: "",
-      password: "",
-      username: "",
+      email: '',
+      password: '',
+      username: '',
       birthday: new Date().toISOString(),
-      gender: "male",
+      gender: 'male',
     },
   });
 
   const onSubmit = async (values: z.infer<typeof signupSchema>) => {
     try {
       await signup(values);
-      navigate.push("/");
-      toast.success("Sign up successfully");
+      navigate.push('/');
+      toast.success('Sign up successfully');
     } catch (error: any) {
       toast.error(`Sign up failed: ${error.message}`);
     }
@@ -129,13 +129,13 @@ const SignupForm = () => {
                         <Button
                           variant="outline"
                           className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !field.value && "text-muted-foreground"
+                            'w-full justify-start text-left font-normal',
+                            !field.value && 'text-muted-foreground',
                           )}
                         >
                           <CalendarIcon className="mr-3 h-4 w-4" />
                           {field.value ? (
-                            format(field.value, "PPP")
+                            format(field.value, 'PPP')
                           ) : (
                             <span>Pick a date</span>
                           )}
@@ -170,7 +170,7 @@ const SignupForm = () => {
                       defaultValue={field.value}
                       className="flex items-center justify-between gap-5 rounded-md border px-5 py-[7px] dark:border-gray-600"
                     >
-                      {field.value === "male" ? <IoMale /> : <IoFemale />}
+                      {field.value === 'male' ? <IoMale /> : <IoFemale />}
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
                           <RadioGroupItem value="male" />
@@ -199,7 +199,7 @@ const SignupForm = () => {
           className="w-full"
           disabled={form.formState.isSubmitting}
         >
-          {form.formState.isSubmitting ? "Loading..." : "Sign Up"}
+          {form.formState.isSubmitting ? 'Loading...' : 'Sign Up'}
         </Button>
       </form>
     </Form>
