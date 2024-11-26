@@ -81,22 +81,22 @@ const MessageBody = ({
     mutation.mutate({ conversationId: params.conversationId, messageId });
   };
 
-  const handleDownload = async (attachment: { url: string; name: string }) => {
-    try {
-      const response = await fetch(attachment.url);
-      const blob = await response.blob();
+  // const handleDownload = async (attachment: { url: string; name: string }) => {
+  //   try {
+  //     const response = await fetch(attachment.url);
+  //     const blob = await response.blob();
 
-      const link = document.createElement('a');
-      link.href = window.URL.createObjectURL(blob);
-      link.download = attachment.name;
+  //     const link = document.createElement('a');
+  //     link.href = window.URL.createObjectURL(blob);
+  //     link.download = attachment.name;
 
-      link.click();
+  //     link.click();
 
-      window.URL.revokeObjectURL(link.href);
-    } catch (error) {
-      console.error('Failed to download file:', error);
-    }
-  };
+  //     window.URL.revokeObjectURL(link.href);
+  //   } catch (error) {
+  //     console.error('Failed to download file:', error);
+  //   }
+  // };
 
   const groupedMessages = messages?.reduce((groups, message) => {
     if (!message) return groups;
@@ -141,7 +141,7 @@ const MessageBody = ({
             return (
               <div
                 key={message.id}
-                className={`flex items-start mb-1 ${
+                className={`flex items-end mb-1 ${
                   isCurrentUser ? 'flex-row-reverse' : ''
                 }`}
               >
@@ -157,7 +157,7 @@ const MessageBody = ({
                 )}
                 <div
                   className={cn(
-                    'flex items-center gap-2 group/message fade-in',
+                    'flex items-center gap-2 group/message',
                     isCurrentUser && 'flex-row-reverse',
                   )}
                 >
@@ -175,81 +175,91 @@ const MessageBody = ({
                             : isCurrentUser
                             ? ''
                             : 'ml-2'
-                        } max-w-[550px] break-words bg-primary text-white px-3.5 py-2 rounded-2xl ${
-                          isCurrentUser ? '' : ''
-                        }`}
+                        } max-w-[550px] break-words bg-primary text-white px-3.5 py-2 rounded-2xl`}
                       >
                         {message.content}
                       </div>
                     </Hint>
                   )}
                   {message.attachments.length > 0 && message.content === '' && (
-                    <Hint
-                      side="left"
-                      label={format(new Date(message.createdAt), 'hh:mm')}
-                      duration={500}
+                    <div
+                      className={`${
+                        isCompact
+                          ? isCurrentUser
+                            ? ''
+                            : 'ml-14'
+                          : isCurrentUser
+                          ? ''
+                          : 'ml-2'
+                      }`}
                     >
-                      <div
-                        className={`grid ${gridCols} gap-1 rounded-2xl overflow-hidden max-w-[400px]`}
+                      <Hint
+                        side="left"
+                        label={format(new Date(message.createdAt), 'hh:mm')}
+                        duration={500}
                       >
-                        {message.attachments.length > 0 &&
-                          message.attachments.map((attachment) => {
-                            if (attachment.mimetype.includes('video')) {
+                        <div
+                          className={`grid ${gridCols} gap-1 rounded-2xl overflow-hidden max-w-[400px]`}
+                        >
+                          {message.attachments.length > 0 &&
+                            message.attachments.map((attachment) => {
+                              if (attachment.mimetype.includes('video')) {
+                                return (
+                                  <video
+                                    key={attachment.id}
+                                    src={attachment.url}
+                                    controls
+                                    className="rounded-xl overflow-hidden border object-cover"
+                                  />
+                                );
+                              }
+                              if (attachment.mimetype.includes('application')) {
+                                return (
+                                  <div
+                                    key={attachment.id}
+                                    className="bg-accent flex items-center gap-3 p-2"
+                                  >
+                                    <a
+                                      href={attachment.url}
+                                      download={attachment.name}
+                                      target="_blank"
+                                      className="flex items-center gap-3"
+                                    >
+                                      <span className="p-1.5 rounded-full bg-accent-foreground/10">
+                                        <FileText size={16} />
+                                      </span>
+                                      <div className="flex flex-col items-start text-sm">
+                                        <span>{attachment.name}</span>
+                                        <span>{attachment.mimetype}</span>
+                                      </div>
+                                    </a>
+                                  </div>
+
+                                  // <div
+                                  //   key={attachment.id}
+                                  //   className="bg-accent flex items-center gap-3 p-2 cursor-pointer"
+                                  //   onClick={() => handleDownload(attachment)}
+                                  // >
+                                  //   <span className="p-1.5 rounded-full bg-accent-foreground/10">
+                                  //     <FileText size={16} />
+                                  //   </span>
+                                  //   <div className="flex flex-col items-start text-sm">
+                                  //     <span>{attachment.name}</span>
+                                  //     <span>{attachment.mimetype}</span>
+                                  //   </div>
+                                  // </div>
+                                );
+                              }
                               return (
-                                <video
+                                <Thumbnail
                                   key={attachment.id}
-                                  src={attachment.url}
-                                  controls
-                                  className="rounded-xl overflow-hidden border object-cover"
+                                  attachment={attachment}
                                 />
                               );
-                            }
-                            if (attachment.mimetype.includes('application')) {
-                              return (
-                                <div
-                                  key={attachment.id}
-                                  className="bg-accent flex items-center gap-3 p-2"
-                                >
-                                  <a
-                                    href={attachment.url}
-                                    download={attachment.name}
-                                    target="_blank"
-                                    className="flex items-center gap-3"
-                                  >
-                                    <span className="p-1.5 rounded-full bg-accent-foreground/10">
-                                      <FileText size={16} />
-                                    </span>
-                                    <div className="flex flex-col items-start text-sm">
-                                      <span>{attachment.name}</span>
-                                      <span>{attachment.mimetype}</span>
-                                    </div>
-                                  </a>
-                                </div>
-
-                                // <div
-                                //   key={attachment.id}
-                                //   className="bg-accent flex items-center gap-3 p-2 cursor-pointer"
-                                //   onClick={() => handleDownload(attachment)}
-                                // >
-                                //   <span className="p-1.5 rounded-full bg-accent-foreground/10">
-                                //     <FileText size={16} />
-                                //   </span>
-                                //   <div className="flex flex-col items-start text-sm">
-                                //     <span>{attachment.name}</span>
-                                //     <span>{attachment.mimetype}</span>
-                                //   </div>
-                                // </div>
-                              );
-                            }
-                            return (
-                              <Thumbnail
-                                key={attachment.id}
-                                attachment={attachment}
-                              />
-                            );
-                          })}
-                      </div>
-                    </Hint>
+                            })}
+                        </div>
+                      </Hint>
+                    </div>
                   )}
                   <div
                     className={cn(

@@ -7,7 +7,7 @@ import { useOnClickOutside } from 'usehooks-ts';
 import { useDropzone, FileRejection } from 'react-dropzone';
 import { createMessage } from '@/services/conversations';
 import { createGroupMessage } from '@/services/groups';
-import { uploadFileMessage } from '@/services/upload';
+import { uploadMultipleFiles } from '@/services/upload';
 import { useAuth } from '@/providers/auth-provider';
 import { Attachment, GroupMessage, Message } from '@/lib/types';
 import { FileType } from '@/lib/enum';
@@ -68,7 +68,7 @@ const MessageEditor = ({
     mutationFn: createGroupMessage,
   });
   const uploadFileMessageMutation = useMutation({
-    mutationFn: uploadFileMessage,
+    mutationFn: uploadMultipleFiles,
   });
 
   useEffect(() => {

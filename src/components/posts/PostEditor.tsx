@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { EditorContent, useEditor } from "@tiptap/react";
+import { EditorContent, useEditor } from '@tiptap/react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import StarterKit from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
-import Image from "next/image";
-import avatar from "@/assets/avatar.png";
-import "./styleTipTap.css";
-import toast from "react-hot-toast";
-import { useState } from "react";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import StarterKit from '@tiptap/starter-kit';
+import Placeholder from '@tiptap/extension-placeholder';
+import Image from 'next/image';
+import avatar from '@/assets/avatar.png';
+import './styleTipTap.css';
+import toast from 'react-hot-toast';
+import { useState } from 'react';
 import {
   Select,
   SelectContent,
@@ -23,16 +23,16 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Edit, ImageUp, Loader, SmileIcon, Video, X } from "lucide-react";
-import { useDropzone } from "react-dropzone";
-import { Attachment } from "@/lib/types";
-import { uploadFile } from "@/services/upload";
-import { FileType, Visibility } from "@/lib/enum";
-import useCreatePost from "@/app/hooks/useCreatePost";
-import AttachmentGallery from "./AttachmentGallery";
-import { useAuth } from "@/providers/auth-provider";
+} from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Edit, ImageUp, Loader, SmileIcon, Video, X } from 'lucide-react';
+import { useDropzone } from 'react-dropzone';
+import { Attachment } from '@/lib/types';
+import { uploadMultipleFiles } from '@/services/upload';
+import { FileType, Visibility } from '@/lib/enum';
+import useCreatePost from '@/app/hooks/useCreatePost';
+import AttachmentGallery from './AttachmentGallery';
+import { useAuth } from '@/providers/auth-provider';
 
 const PostEditor = () => {
   const { user } = useAuth();
@@ -47,7 +47,7 @@ const PostEditor = () => {
     extensions: [
       StarterKit,
       Placeholder.configure({
-        placeholder: "Start writing your post here...",
+        placeholder: 'Start writing your post here...',
       }),
     ],
     content: ``,
@@ -56,7 +56,7 @@ const PostEditor = () => {
 
   const handlePost = async () => {
     if (editor?.isEmpty && attachments.length === 0) {
-      toast.error("Post must have content or attachments");
+      toast.error('Post must have content or attachments');
       return;
     }
 
@@ -79,7 +79,7 @@ const PostEditor = () => {
     setLoadingAttachments(true);
 
     try {
-      const newFiles = await uploadFile({
+      const newFiles = await uploadMultipleFiles({
         files: acceptedFiles,
         type: FileType.POST,
       });
@@ -102,9 +102,9 @@ const PostEditor = () => {
     onDrop: handleDrop,
     onDropRejected(fileRejections) {
       const errors = fileRejections.map(({ file, errors }) => {
-        return `${file.name} - ${errors.map((e) => e.message).join(", ")}`;
+        return `${file.name} - ${errors.map((e) => e.message).join(', ')}`;
       });
-      toast.error(`File upload failed: ${errors.join(", ")}`);
+      toast.error(`File upload failed: ${errors.join(', ')}`);
     },
     multiple: true,
   });
@@ -169,14 +169,14 @@ const PostEditor = () => {
           <div
             {...getRootProps()}
             className={`p-8 border-2 border-dashed rounded-lg mt-3 ${
-              isDragActive ? "border-primary bg-primary/10" : "border-gray-300"
+              isDragActive ? 'border-primary bg-primary/10' : 'border-gray-300'
             }`}
           >
             <input {...getInputProps()} />
             <p className="text-gray-500 text-center">
               {isDragActive
-                ? "Drop files here..."
-                : "Drag & drop some files here, or click to select files"}
+                ? 'Drop files here...'
+                : 'Drag & drop some files here, or click to select files'}
             </p>
           </div>
         )}

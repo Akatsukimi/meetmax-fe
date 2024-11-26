@@ -32,7 +32,7 @@ const MainLayout = ({
 
   return (
     <div className="flex flex-grow">
-      <div className="bg-gray-50 p-7.5  rounded-t-2xl flex-1">
+      <div className="bg-gray-50 p-7.5 rounded-2xl flex-1">
         <div className="flex h-full gap-x-7.5">
           <div className="flex flex-col h-full lg:w-[340px] w-24 bg-background rounded-lg overflow-hidden">
             <div className="flex w-full items-center justify-between py-4 px-3 gap-5">

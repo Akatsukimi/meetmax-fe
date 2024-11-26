@@ -52,8 +52,12 @@ const ConversationSidebar = () => {
 
   const { data: conversations } = useQuery<Conversation[]>({
     queryKey: ['conversations'],
+    staleTime: Infinity,
   });
-  const { data: groups } = useQuery<Group[]>({ queryKey: ['groups'] });
+  const { data: groups } = useQuery<Group[]>({
+    queryKey: ['groups'],
+    staleTime: Infinity,
+  });
   if (!conversations || !groups) return <div>Loading...</div>;
   if (
     pathname === '/messages' &&
