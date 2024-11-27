@@ -26,17 +26,19 @@ export const createMessage = async ({
   conversationId,
   content,
   attachments,
+  parentMessageId,
 }: {
   conversationId: string;
   content?: string;
   attachments?: Attachment[];
+  parentMessageId?: string;
 }) => {
-  console.log('attachments in api', attachments);
   return await axiosInstance.post(
     `/api/conversations/${conversationId}/messages`,
     {
       content,
       attachments,
+      parentMessageId,
     },
   );
 };
