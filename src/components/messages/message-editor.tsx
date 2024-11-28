@@ -28,6 +28,7 @@ import {
   X,
   XIcon,
 } from 'lucide-react';
+import MessageReply from './message-reply';
 
 interface IMessageEditorProps {
   stateRelying: { isRelying: boolean; message: Message | GroupMessage | null };
@@ -107,6 +108,9 @@ const MessageEditor = ({
               },
             },
           );
+          if (textareaRef.current) {
+            textareaRef.current.focus();
+          }
         }
       }
     };
@@ -132,6 +136,8 @@ const MessageEditor = ({
         conversationId: params.conversationId,
         content: message,
         attachments,
+        parentMessageId:
+          isRelying && messageReplying ? messageReplying.id : undefined,
       });
     }
     if (pathname.includes('groups')) {
@@ -139,11 +145,14 @@ const MessageEditor = ({
         groupId: params.groupId,
         content: message,
         attachments,
+        parentMessageId:
+          isRelying && messageReplying ? messageReplying.id : undefined,
       });
     }
 
     setShowEmojiPicker(false);
     setAttachments([]);
+    setStateReplying({ isRelying: false, message: null });
     setMessage('');
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -193,6 +202,9 @@ const MessageEditor = ({
         },
       );
     }
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
   };
 
   const handleDropRejected = (fileRejections: FileRejection[]) => {
@@ -235,31 +247,13 @@ const MessageEditor = ({
   };
 
   return (
-    <div className="space-y-2">
-      {isRelying && (
-        <div className="flex items-center justify-between">
-          <div className="flex items-start flex-col">
-            <p className="text-base">
-              Replying to{' '}
-              {messageReplying?.author.id === user?.id
-                ? 'yourself'
-                : `${messageReplying?.author.username}`}
-            </p>
-            <p className="text-sm text-foreground/70">
-              {messageReplying?.content}
-            </p>
-          </div>
-          <Button
-            variant="ghost"
-            className="rounded-full"
-            size="iconSm"
-            onClick={() =>
-              setStateReplying({ isRelying: false, message: null })
-            }
-          >
-            <X />
-          </Button>
-        </div>
+    <div className="space-y-2 py-2 px-5">
+      {messageReplying && isRelying && (
+        <MessageReply
+          messageReplying={messageReplying}
+          setStateReplying={setStateReplying}
+          user={user}
+        />
       )}
       {isEditing && (
         <div className="flex items-center justify-between">

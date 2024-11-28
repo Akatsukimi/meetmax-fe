@@ -15,6 +15,7 @@ const ConversationIdPage = () => {
   useEffect(() => {
     socket.on('onMessage', (payload: MessageEventPayload) => {
       const { conversation, messages } = payload;
+      console.log('onMessage received', messages);
       queryClient.setQueryData(
         ['conversation-messages', conversation.id],
         (oldData: { messages: Message[] }) => {

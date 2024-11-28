@@ -49,6 +49,7 @@ export type Message = {
   createdAt: string;
   author: User;
   attachments: AttachmentResponse[];
+  parentMessage: Message | null;
 };
 
 export type AttachmentResponse = {
@@ -156,10 +157,7 @@ export type GroupMessage = {
   author: User;
   group: Group;
   attachments: Attachment[];
-};
-
-export type MessageAttachment = {
-  key: string;
+  parentMessage: Omit<GroupMessage, 'group'> | null;
 };
 
 export type GroupMessages = {

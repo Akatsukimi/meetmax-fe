@@ -23,9 +23,6 @@ const GroupIdPage = () => {
   useEffect(() => {
     socket.on('onGroupMessage', (payload: GroupMessageEventPayload) => {
       const { group, messages } = payload;
-      console.log('Group Message Received');
-      console.log('Group Message Received, group', group);
-      console.log('Group Message Received, message', messages);
       queryClient.setQueryData(
         ['group-messages', group.id],
         (oldData: { messages: GroupMessage[] }) => {
@@ -38,7 +35,6 @@ const GroupIdPage = () => {
 
       // Update the last message sent in the group in the cache
       queryClient.setQueryData(['groups'], (oldGroups: Group[] | undefined) => {
-        console.log('oldGroups', oldGroups);
         if (!oldGroups) return [];
         const updatedGroups = oldGroups.map((grp) =>
           grp.id === group.id
@@ -49,16 +45,13 @@ const GroupIdPage = () => {
               }
             : grp,
         );
-        console.log('updatedGroups 1', updatedGroups);
         const groupIndex = updatedGroups.findIndex(
           (grp) => grp.id === group.id,
         );
-        console.log('groupIndex', groupIndex);
         if (groupIndex > -1) {
           const [updatedGroup] = updatedGroups.splice(groupIndex, 1);
           updatedGroups.unshift(updatedGroup);
         }
-        console.log('updatedGroups 2', updatedGroups);
         return updatedGroups;
       });
     });

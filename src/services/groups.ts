@@ -22,14 +22,17 @@ export const createGroupMessage = async ({
   groupId,
   content,
   attachments,
+  parentMessageId,
 }: {
   groupId: string;
   content?: string;
   attachments?: Attachment[];
+  parentMessageId?: string;
 }) => {
   const response = await axiosInstance.post(`/api/groups/${groupId}/messages`, {
     content,
     attachments,
+    parentMessageId,
   });
   return response.data;
 };
