@@ -105,18 +105,24 @@ const Message = ({
                     >
                       <span className="flex items-center gap-1 text-foreground/50">
                         <Reply size={12} />
-                        {message.parentMessage.author.id ===
-                        message.author.id ? (
+                        {message.author.id === user.id ? (
+                          message.parentMessage.author.id === user.id ? (
+                            <span className="text-xs">
+                              You replied to yourself
+                            </span>
+                          ) : (
+                            <span className="text-xs">
+                              You replied to{' '}
+                              {message.parentMessage.author.username}
+                            </span>
+                          )
+                        ) : message.parentMessage.author.id === user.id ? (
                           <span className="text-xs">
-                            You replied to{' '}
-                            {message.parentMessage.author.id === user.id
-                              ? 'yourself'
-                              : 'themself'}
+                            {message.author.username} replied to you
                           </span>
                         ) : (
                           <span className="text-xs">
-                            You replied to{' '}
-                            {message.parentMessage.author.username}
+                            {message.author.username} replied to themself
                           </span>
                         )}
                       </span>
@@ -235,18 +241,24 @@ const Message = ({
                     >
                       <span className="flex items-center gap-1 text-foreground/50">
                         <Reply size={12} />
-                        {message.parentMessage.author.id ===
-                        message.author.id ? (
+                        {message.author.id === user.id ? (
+                          message.parentMessage.author.id === user.id ? (
+                            <span className="text-xs">
+                              You replied to yourself
+                            </span>
+                          ) : (
+                            <span className="text-xs">
+                              You replied to{' '}
+                              {message.parentMessage.author.username}
+                            </span>
+                          )
+                        ) : message.parentMessage.author.id === user.id ? (
                           <span className="text-xs">
-                            You replied to{' '}
-                            {message.parentMessage.author.id === user.id
-                              ? 'yourself'
-                              : 'themself'}
+                            {message.author.username} replied to you
                           </span>
                         ) : (
                           <span className="text-xs">
-                            You replied to{' '}
-                            {message.parentMessage.author.username}
+                            {message.author.username} replied to themself
                           </span>
                         )}
                       </span>
