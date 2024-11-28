@@ -1,12 +1,13 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import SearchField from "./search-field";
-import Image from "next/image";
-import Logo from "@/assets/logo.png";
-import { Button } from "../ui/button";
-import { MessageSquareDot } from "lucide-react";
-import { useAuth } from "@/providers/auth-provider";
+import Link from 'next/link';
+import SearchField from './search-field';
+import Image from 'next/image';
+import Logo from '@/assets/logo.png';
+import { Button } from '../ui/button';
+import { MessageSquareDot } from 'lucide-react';
+import { useAuth } from '@/providers/auth-provider';
+import avatar from '@/assets/avatar.png';
 
 const HeaderBar = () => {
   const { user } = useAuth();
@@ -41,19 +42,13 @@ const HeaderBar = () => {
         </Button>
         <div className="hidden sm:flex items-center gap-5">
           <span>{user?.username}</span>
-          {user?.avatar ? (
-            <Image
-              src={user.avatar}
-              width={40}
-              height={40}
-              alt="avatar"
-              className="object-cover rounded aspect-[1/1]"
-            />
-          ) : (
-            <div className="bg-primary size-10 flex items-center justify-center rounded text-white">
-              {user?.username.charAt(0).toUpperCase()}
-            </div>
-          )}
+          <Image
+            src={user?.avatar || avatar}
+            width={40}
+            height={40}
+            alt="avatar"
+            className="object-cover rounded aspect-[1/1]"
+          />
         </div>
       </div>
     </header>

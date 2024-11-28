@@ -11,6 +11,16 @@ export enum Visibility {
   ONLY_ME = 'onlyMe',
 }
 
+export enum SocialPlatform {
+  Portfolio = 'Portfolio',
+  Facebook = 'Facebook',
+  Twitter = 'Twitter',
+  Instagram = 'Instagram',
+  TikTok = 'TikTok',
+  Github = 'Github',
+  Linkedin = 'Linkedin',
+}
+
 export enum QueryKeyFeed {
   Posts = 'posts',
   UsersLikedPost = 'users-liked-post',

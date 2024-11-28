@@ -1,36 +1,34 @@
-import { useRef, useState } from "react";
+import { useRef, useState } from 'react';
 import ReactCrop, {
   centerCrop,
   makeAspectCrop,
   Crop,
   PixelCrop,
   convertToPixelCrop,
-} from "react-image-crop";
-import "react-image-crop/dist/ReactCrop.css";
+} from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { canvasPreview } from "./canvasPreview";
-import { useDebounceEffect } from "@/app/hooks/useDebounceEffect";
-import { Button } from "@/components/ui/button";
-import { UploadIcon } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import Image from "next/image";
-import toast from "react-hot-toast";
-import { User } from "@/lib/types";
-import useUploadAvatar from "@/app/hooks/useUploadAvatar";
+} from '@/components/ui/dialog';
+import { canvasPreview } from './canvasPreview';
+import { useDebounceEffect } from '@/app/hooks/useDebounceEffect';
+import { Button } from '@/components/ui/button';
+import { UploadIcon } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import Image from 'next/image';
+import toast from 'react-hot-toast';
+import useUploadAvatar from '@/app/hooks/useUploadAvatar';
+import useUploadCoverPhoto from '@/app/hooks/useUploadCoverPhoto';
 
 interface PhotoUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
   isAvatar?: boolean;
-  userId: string;
-  updateAuthUser: (user: User | null) => void;
 }
 
 // This is to demonstrate how to make and center a % aspect crop
@@ -38,20 +36,20 @@ interface PhotoUploadModalProps {
 function centerAspectCrop(
   mediaWidth: number,
   mediaHeight: number,
-  aspect: number
+  aspect: number,
 ) {
   return centerCrop(
     makeAspectCrop(
       {
-        unit: "%",
+        unit: '%',
         width: 90,
       },
       aspect,
       mediaWidth,
-      mediaHeight
+      mediaHeight,
     ),
     mediaWidth,
-    mediaHeight
+    mediaHeight,
   );
 }
 
@@ -59,11 +57,9 @@ export default function PhotoUploadModal({
   isOpen,
   onClose,
   isAvatar,
-  userId,
-  updateAuthUser,
 }: PhotoUploadModalProps) {
-  const [imgSrc, setImgSrc] = useState("");
-  const [originalFileName, setOriginalFileName] = useState("avatar.png");
+  const [imgSrc, setImgSrc] = useState('');
+  const [originalFileName, setOriginalFileName] = useState('avatar.png');
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const [crop, setCrop] = useState<Crop>();
@@ -72,6 +68,7 @@ export default function PhotoUploadModal({
   const [rotate, setRotate] = useState(0);
   const [aspect, setAspect] = useState<number | undefined>(16 / 9);
   const { mutateAsync: uploadAvatar } = useUploadAvatar();
+  const { mutateAsync: uploadCoverPhoto } = useUploadCoverPhoto();
 
   function onSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files.length > 0) {
@@ -79,8 +76,8 @@ export default function PhotoUploadModal({
       const file = e.target.files[0];
       setOriginalFileName(file.name);
       const reader = new FileReader();
-      reader.addEventListener("load", () =>
-        setImgSrc(reader.result?.toString() || "")
+      reader.addEventListener('load', () =>
+        setImgSrc(reader.result?.toString() || ''),
       );
       reader.readAsDataURL(e.target.files[0]);
     }
@@ -107,12 +104,12 @@ export default function PhotoUploadModal({
           previewCanvasRef.current,
           completedCrop,
           scale,
-          rotate
+          rotate,
         );
       }
     },
     100,
-    [completedCrop, scale, rotate]
+    [completedCrop, scale, rotate],
   );
 
   function handleToggleAspectClick() {
@@ -138,12 +135,15 @@ export default function PhotoUploadModal({
       async (blob) => {
         if (blob) {
           const file = new File([blob], originalFileName, {
-            type: "image/png",
+            type: 'image/png',
           });
 
           try {
-            const updatedUser = await uploadAvatar({ userId, file });
-            updateAuthUser(updatedUser);
+            if (isAvatar) {
+              await uploadAvatar({ file });
+            } else {
+              await uploadCoverPhoto({ file });
+            }
           } catch (error) {
             toast.error(`Failed to update avatar: ${error}`);
           } finally {
@@ -151,8 +151,8 @@ export default function PhotoUploadModal({
           }
         }
       },
-      "image/png",
-      1 // High-quality
+      'image/png',
+      1, // High-quality
     );
   }
 
@@ -175,7 +175,7 @@ export default function PhotoUploadModal({
             Upload photo
           </Button>
           <Button variant="outline" onClick={handleToggleAspectClick}>
-            Toggle aspect {aspect ? "off" : "on"}
+            Toggle aspect {aspect ? 'off' : 'on'}
           </Button>
         </div>
         <div className="flex justify-between">
@@ -233,12 +233,12 @@ export default function PhotoUploadModal({
             <canvas
               ref={previewCanvasRef}
               style={{
-                border: "1px solid black",
-                objectFit: "contain",
+                border: '1px solid black',
+                objectFit: 'contain',
                 width: completedCrop.width,
                 height: completedCrop.height,
               }}
-              className={isAvatar ? "rounded-full" : ""}
+              className={isAvatar ? 'rounded-full' : ''}
             />
           </div>
         )}

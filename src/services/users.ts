@@ -1,26 +1,48 @@
-import axiosInstance from "@/lib/axiosInstance";
-import { User } from "@/lib/types";
+import axiosInstance from '@/lib/axiosInstance';
+import { User, UserProfile } from '@/lib/types';
 
 export const getUsers = async () => {
-  const response = await axiosInstance.get("/api/users");
+  const response = await axiosInstance.get('/api/users');
   return response.data;
 };
 
 export const uploadAvatar = async (
-  userId: string,
-  file: File
-): Promise<User> => {
+  file: File,
+): Promise<Pick<User, 'avatar'>> => {
   const formData = new FormData();
-  formData.append("file", file);
+  formData.append('file', file);
 
   const response = await axiosInstance.post(
-    `/api/users/${userId}/upload-avatar`,
+    `/api/users/upload-avatar`,
     formData,
     {
       headers: {
-        "Content-Type": "multipart/form-data",
+        'Content-Type': 'multipart/form-data',
       },
-    }
+    },
   );
+  return response.data;
+};
+
+export const uploadCoverPhoto = async (
+  file: File,
+): Promise<Pick<UserProfile, 'coverPhoto'>> => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await axiosInstance.post(
+    `/api/users/upload-coverPhoto`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    },
+  );
+  return response.data;
+};
+
+export const getUserProfile = async (): Promise<UserProfile> => {
+  const response = await axiosInstance.get('/api/users/profile');
   return response.data;
 };

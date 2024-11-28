@@ -1,35 +1,36 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import avatar from "@/assets/avatar.png";
-import banner from "@/assets/cover-photo.png";
-import { Button } from "@/components/ui/button";
-import { CloudUpload, ImageIcon } from "lucide-react";
+import Image from 'next/image';
+import avatar from '@/assets/avatar.png';
+import banner from '@/assets/cover-photo.png';
+import { Button } from '@/components/ui/button';
+import { CloudUpload, ImageIcon } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { useState } from "react";
-import PhotoUploadModal from "@/components/modals/photo-upload-modal";
-import { useAuth } from "@/providers/auth-provider";
+} from '@/components/ui/popover';
+import { useState } from 'react';
+import PhotoUploadModal from '@/components/modals/photo-upload-modal';
+import { UserProfile } from '@/lib/types';
 
-export default function ProfileHeader() {
-  const { user, updateAuthUser } = useAuth();
+interface ProfileHeaderProps {
+  profile?: UserProfile | null;
+}
+
+export default function ProfileHeader({ profile }: ProfileHeaderProps) {
   const [avatarModalOpen, setAvatarModalOpen] = useState(false);
   const [coverPhotoModalOpen, setCoverPhotoModalOpen] = useState(false);
-
-  if (!user) return null;
 
   return (
     <div className="rounded-md shadow pb-7.5">
       <div className="relative">
         <Image
-          src={banner}
+          src={profile?.coverPhoto || banner}
           alt="Cover Photo"
           width={1232}
           height={350}
-          className="aspect-auto object-cover rounded-md"
+          className="aspect-[1232/350] object-cover rounded-md"
           priority
         />
         <Button
@@ -44,7 +45,7 @@ export default function ProfileHeader() {
           <PopoverTrigger asChild>
             <div className="absolute -bottom-16 left-6 rounded-full border-2 border-background cursor-pointer">
               <Image
-                src={user?.avatar || avatar}
+                src={profile?.avatar || avatar}
                 alt="Avatar"
                 width={104}
                 height={104}
@@ -70,8 +71,10 @@ export default function ProfileHeader() {
 
       <div className="flex justify-between mt-[75px] px-7.5">
         <div>
-          <h1 className="text-2xl font-bold">Saleh Ahmed</h1>
-          <p className="text-muted-foreground">UI Designer</p>
+          <h1 className="text-2xl font-bold">
+            {profile?.firstName} {profile?.lastName}
+          </h1>
+          <p className="text-muted-foreground">{profile?.bio}</p>
         </div>
         <Button variant="outline">Edit basic info</Button>
       </div>
@@ -81,8 +84,6 @@ export default function ProfileHeader() {
           isOpen={avatarModalOpen}
           onClose={() => setAvatarModalOpen(false)}
           isAvatar
-          userId={user.id}
-          updateAuthUser={updateAuthUser}
         />
       )}
 
@@ -90,8 +91,6 @@ export default function ProfileHeader() {
         <PhotoUploadModal
           isOpen={coverPhotoModalOpen}
           onClose={() => setCoverPhotoModalOpen(false)}
-          userId={user.id}
-          updateAuthUser={updateAuthUser}
         />
       )}
     </div>

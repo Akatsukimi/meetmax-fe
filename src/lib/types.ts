@@ -1,4 +1,4 @@
-import { Visibility } from './enum';
+import { SocialPlatform, Visibility } from './enum';
 
 export type ErrorServerResponse = {
   response: {
@@ -23,6 +23,24 @@ export type User = {
   email: string;
   avatar?: string;
   username: string;
+};
+
+export type UserProfile = {
+  username: string;
+  avatar: string | null;
+  coverPhoto: string | null;
+  bio: string;
+  firstName: string | null;
+  lastName: string | null;
+  birthday: string;
+  gender: string;
+  address: string | null;
+  socialLinks: SocialLink[] | null;
+};
+
+export type SocialLink = {
+  platform: SocialPlatform;
+  url: string;
 };
 
 export type Message = {
