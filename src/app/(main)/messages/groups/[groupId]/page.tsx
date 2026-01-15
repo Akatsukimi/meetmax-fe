@@ -93,28 +93,30 @@ const GroupIdPage = () => {
     socket.on(
       'onGroupReceivedNewUser',
       ({ group }: AddGroupUserMessagePayload) => {
-        console.log('Received onGroupReceivedNewUser');
+        console.log('Received onGroupReceivedNewUser', group);
       },
     );
 
     socket.on(
       'onGroupRecipientRemoved',
       ({ group }: RemoveGroupUserMessagePayload) => {
-        console.log('onGroupRecipientRemoved');
+        console.log('onGroupRecipientRemoved', group);
       },
     );
 
-    socket.on('onGroupRemoved', (payload: RemoveGroupUserMessagePayload) => {});
+    socket.on('onGroupRemoved', (payload: RemoveGroupUserMessagePayload) => {
+      console.log('onGroupRemoved', payload);
+    });
 
     socket.on(
       'onGroupParticipantLeft',
       ({ group, userId }: GroupParticipantLeftPayload) => {
-        console.log('onGroupParticipantLeft received');
+        console.log('onGroupParticipantLeft received', group, userId);
       },
     );
 
     socket.on('onGroupOwnerUpdate', (group: Group) => {
-      console.log('received onGroupOwnerUpdate');
+      console.log('received onGroupOwnerUpdate', group);
     });
 
     return () => {

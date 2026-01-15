@@ -1,17 +1,21 @@
-import { useEffect, DependencyList } from 'react'
+import { useEffect, useRef, DependencyList } from 'react';
 
 export function useDebounceEffect(
   fn: () => void,
   waitTime: number,
-  deps?: DependencyList,
+  deps: DependencyList = [],
 ) {
+  const fnRef = useRef(fn);
+  fnRef.current = fn;
+
   useEffect(() => {
     const t = setTimeout(() => {
-      fn.apply(undefined, deps)
-    }, waitTime)
+      fnRef.current();
+    }, waitTime);
 
     return () => {
-      clearTimeout(t)
-    }
-  }, deps)
+      clearTimeout(t);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [waitTime, ...deps]);
 }
