@@ -102,6 +102,13 @@ export type LikedPostUser = BaseLikedPostUser & {
   avatar: string | null;
 };
 
+export type Like = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  user: User;
+};
+
 export type Pagination<T> = {
   data: T[];
   total: number;
@@ -118,7 +125,7 @@ export type Post = {
   visibility: Visibility;
   author: User;
   attachments: Attachment[];
-  likes: LikedPostUser[];
+  likes: Like[];
   remainingLikeCount: number;
   isLikedByCurrentUser: boolean;
   commentCount: number;

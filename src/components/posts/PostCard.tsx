@@ -1,24 +1,24 @@
-import type { Post, User } from "@/lib/types";
-import Image from "next/image";
-import avatar from "@/assets/avatar.png";
+import type { Post, User } from '@/lib/types';
+import Image from 'next/image';
+import avatar from '@/assets/avatar.png';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { format, formatDistanceToNow } from "date-fns";
-import { VisibilityIcons } from "@/lib/constants";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Heart, MessageCircleMore, Share2 } from "lucide-react";
-import AttachmentGallery from "./AttachmentGallery";
-import useLikePost from "@/app/hooks/useLikePost";
-import { useState } from "react";
-import LikeListModal from "@/components/modals/like-list-modal";
-import CommentListModal from "@/components/modals/comment-list-modal";
-import CustomPostMe from "./CustomPostMe";
-import CustomPost from "./CustomPost";
+} from '@/components/ui/tooltip';
+import { format, formatDistanceToNow } from 'date-fns';
+import { VisibilityIcons } from '@/lib/constants';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { Heart, MessageCircleMore, Share2 } from 'lucide-react';
+import AttachmentGallery from './AttachmentGallery';
+import useLikePost from '@/app/hooks/useLikePost';
+import { useState } from 'react';
+import LikeListModal from '@/components/modals/like-list-modal';
+import CommentListModal from '@/components/modals/comment-list-modal';
+import CustomPostMe from './CustomPostMe';
+import CustomPost from './CustomPost';
 
 interface PostCardProps {
   post: Post;
@@ -31,22 +31,22 @@ const PostCard = ({ post, user }: PostCardProps) => {
   const [commentDialogOpen, setCommentDialogOpen] = useState(false);
 
   const likeText = (() => {
-    if (!post.likes || post.likes.length === 0) return "";
+    if (!post.likes || post.likes.length === 0) return '';
 
     if (post.isLikedByCurrentUser) {
       return (
-        "You" +
+        'You' +
         (post.remainingLikeCount > 0
           ? ` and ${post.remainingLikeCount} others`
-          : "")
+          : '')
       );
     } else {
-      const firstLikeUsername = post.likes[0]?.username;
+      const firstLikeUsername = post.likes[0]?.user.username;
       return (
         firstLikeUsername +
         (post.remainingLikeCount > 0
           ? ` and ${post.remainingLikeCount} others`
-          : "")
+          : '')
       );
     }
   })();
@@ -77,13 +77,13 @@ const PostCard = ({ post, user }: PostCardProps) => {
                     <span className="text-xs text-gray-500">
                       {formatDistanceToNow(new Date(post.createdAt), {
                         addSuffix: true,
-                      }).replace("about ", "")}
+                      }).replace('about ', '')}
                     </span>
                   </TooltipTrigger>
                   <TooltipContent className="text-xs">
                     {format(
                       new Date(post.createdAt),
-                      "EEEE, MMMM do, yyyy 'at' h:mm a"
+                      "EEEE, MMMM do, yyyy 'at' h:mm a",
                     )}
                   </TooltipContent>
                 </Tooltip>
@@ -148,11 +148,11 @@ const PostCard = ({ post, user }: PostCardProps) => {
             <Button variant="ghost" onClick={() => likePost()}>
               <Heart
                 className={`${
-                  post.isLikedByCurrentUser && "fill-red-500 text-red-500"
+                  post.isLikedByCurrentUser && 'fill-red-500 text-red-500'
                 }`}
               />
               <span
-                className={`${post.isLikedByCurrentUser && "text-red-500"}`}
+                className={`${post.isLikedByCurrentUser && 'text-red-500'}`}
               >
                 Love
               </span>
