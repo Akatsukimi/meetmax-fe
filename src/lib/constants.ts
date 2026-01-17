@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 import {
   Bell,
@@ -12,66 +12,63 @@ import {
   Globe,
   Users,
   Lock,
-} from "lucide-react";
-
-export const BACKEND_URL = process.env.BACKEND_URL;
-export const SOCKET_URL = process.env.SOCKET_URL;
+} from 'lucide-react';
 
 export const MenuBar = [
   {
-    href: "/",
+    href: '/',
     icon: LayoutGrid,
-    label: "Feed",
-    title: "Home",
+    label: 'Feed',
+    title: 'Home',
   },
   {
-    href: "/communities",
+    href: '/communities',
     icon: UsersRound,
-    label: "My communities",
-    title: "My communities",
+    label: 'My communities',
+    title: 'My communities',
   },
   {
-    href: "/messages",
+    href: '/messages',
     icon: MessageSquareDot,
-    label: "Messages",
-    title: "Messages",
+    label: 'Messages',
+    title: 'Messages',
   },
   {
-    href: "/notifications",
+    href: '/notifications',
     icon: Bell,
-    label: "Notifications",
-    title: "Notifications",
+    label: 'Notifications',
+    title: 'Notifications',
   },
   {
-    href: "/explore",
+    href: '/explore',
     icon: Earth,
-    label: "Explore",
-    title: "Explore",
+    label: 'Explore',
+    title: 'Explore',
   },
   {
-    href: "/profile",
+    href: '/profile',
     icon: User,
-    label: "Profile",
-    title: "Profile",
+    label: 'Profile',
+    title: 'Profile',
   },
   {
-    href: "/settings",
+    href: '/settings',
     icon: Settings,
-    label: "Settings",
-    title: "Settings",
+    label: 'Settings',
+    title: 'Settings',
   },
   {
-    href: "/logout",
+    href: '/logout',
     icon: LogOut,
-    label: "Logout",
-    title: "Logout",
+    label: 'Logout',
+    title: 'Logout',
   },
 ];
 
 export const VisibilityIcons: {
   [key: string]: JSX.Element;
 } = {
-  public: React.createElement(Globe, { className: "text-gray-500", size: 14 }),
-  friends: React.createElement(Users, { className: "text-gray-500", size: 14 }),
-  onlyMe: React.createElement(Lock, { className: "text-gray-500", size: 14 }),
+  public: React.createElement(Globe, { className: 'text-gray-500', size: 14 }),
+  friends: React.createElement(Users, { className: 'text-gray-500', size: 14 }),
+  onlyMe: React.createElement(Lock, { className: 'text-gray-500', size: 14 }),
 };
