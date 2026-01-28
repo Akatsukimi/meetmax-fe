@@ -1,13 +1,13 @@
-import { QueryKeyFeed } from "@/lib/enum";
-import { Post } from "@/lib/types";
-import { useAuth } from "@/providers/auth-provider";
-import { likePost } from "@/services/posts";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { QueryKeyFeed } from '@/lib/enum';
+import { Post } from '@/lib/types';
+import { useAuth } from '@/providers/auth-provider';
+import { likePost } from '@/services/posts';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 const useLikePost = (postId: string) => {
   const { user } = useAuth();
   if (!user) {
-    throw new Error("User is not authenticated");
+    throw new Error('User is not authenticated');
   }
   const queryClient = useQueryClient();
 
@@ -32,21 +32,20 @@ const useLikePost = (postId: string) => {
             post.id === postId
               ? {
                   ...post,
-                  likes: post.likes.some((like) => like.userId === user.id)
-                    ? post.likes.filter((like) => like.userId !== user.id) // Unlike
+                  likes: post.likes.some((like) => like.user.id === user.id)
+                    ? post.likes.filter((like) => like.user.id !== user.id) // Unlike
                     : [
                         ...post.likes,
                         {
                           id: Date.now().toString(),
-                          userId: user.id,
-                          username: user.username,
-                          avatar: user.avatar ?? null,
+                          user: user,
+                          createdAt: new Date().toISOString(),
                           updatedAt: new Date().toISOString(),
                         },
                       ], // Like
                 }
-              : post
-          )
+              : post,
+          ),
       );
 
       // Return rollback context if mutation fails
@@ -57,7 +56,7 @@ const useLikePost = (postId: string) => {
       if (context?.previousPosts) {
         queryClient.setQueryData(
           [`${QueryKeyFeed.Posts}:${user.id}`],
-          context.previousPosts
+          context.previousPosts,
         );
       }
     },
