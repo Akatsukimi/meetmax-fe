@@ -1,7 +1,7 @@
-import { z } from "zod";
-import { FC } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from 'zod';
+import { FC } from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 import {
   Form,
@@ -10,21 +10,23 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useMutation } from "@tanstack/react-query";
-import toast from "react-hot-toast";
-import { createGroup } from "@/services/groups";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { useMutation } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
+import { createGroup } from '@/services/groups';
 
 const createGroupFormSchema = z.object({
   users: z.array(
-    z.string().min(1, {
-      message: "User must be at least 1 character long",
-    })
+    z.object({
+      username: z.string().min(1, {
+        message: 'User must be at least 1 character long',
+      }),
+    }),
   ),
   title: z.string().min(1, {
-    message: "Title must be at least 1 character long",
+    message: 'Title must be at least 1 character long',
   }),
 });
 
@@ -36,14 +38,14 @@ const CreateGroupForm: FC<CreateGroupFormProps> = ({ setIsOpen }) => {
   const form = useForm<z.infer<typeof createGroupFormSchema>>({
     resolver: zodResolver(createGroupFormSchema),
     defaultValues: {
-      users: [""],
-      title: "",
+      users: [{ username: '' }],
+      title: '',
     },
   });
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "users" as const,
+    name: 'users',
   });
 
   const mutation = useMutation({
@@ -55,7 +57,10 @@ const CreateGroupForm: FC<CreateGroupFormProps> = ({ setIsOpen }) => {
 
   const onSubmit = async (values: z.infer<typeof createGroupFormSchema>) => {
     try {
-      mutation.mutate(values);
+      mutation.mutate({
+        ...values,
+        users: values.users.map((u) => u.username),
+      });
     } catch (error) {
       console.error(error);
     } finally {
@@ -71,7 +76,7 @@ const CreateGroupForm: FC<CreateGroupFormProps> = ({ setIsOpen }) => {
           <FormField
             key={field.id}
             control={form.control}
-            name={`users.${index}`}
+            name={`users.${index}.username`}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Username</FormLabel>
@@ -96,7 +101,7 @@ const CreateGroupForm: FC<CreateGroupFormProps> = ({ setIsOpen }) => {
             )}
           />
         ))}
-        <Button type="button" onClick={() => append("")}>
+        <Button type="button" onClick={() => append({ username: '' })}>
           Add Username
         </Button>
         <FormField
