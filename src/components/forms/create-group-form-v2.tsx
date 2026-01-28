@@ -19,7 +19,13 @@ import { Badge } from '@/components/ui/badge';
 
 const formSchema = z.object({
   title: z.string().optional(),
-  users: z.array(z.string()).min(1, 'At least one user is required'),
+  users: z
+    .array(
+      z.object({
+        name: z.string(),
+      }),
+    )
+    .min(1, 'At least one user is required'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -75,8 +81,9 @@ export default function InputWithUsersAndTitle() {
   };
 
   const handleSuggestionClick = (suggestion: string) => {
-    if (!form.getValues().users.includes(suggestion)) {
-      append(suggestion);
+    const currentUsers = form.getValues().users;
+    if (!currentUsers.find((u) => u.name === suggestion)) {
+      append({ name: suggestion });
     }
     setInputValue('');
     setSuggestions([]);
@@ -116,13 +123,7 @@ export default function InputWithUsersAndTitle() {
                         variant="secondary"
                         className="text-sm"
                       >
-                        {Object.entries(item)
-                          .filter(
-                            ([key, val]) =>
-                              key !== 'id' && typeof val === 'string',
-                          )
-                          .map(([, val]) => val)
-                          .join('')}
+                        {item.name}
                         <button
                           type="button"
                           onClick={() => remove(index)}
