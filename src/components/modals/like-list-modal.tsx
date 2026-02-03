@@ -1,18 +1,18 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from '@tanstack/react-query';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { getUsersLikedPost } from "@/services/posts";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import avatar from "@/assets/avatar.png";
-import { LikedPostUser } from "@/lib/types";
-import { QueryKeyFeed } from "@/lib/enum";
-import { useInView } from "react-intersection-observer";
-import { useEffect } from "react";
+} from '@/components/ui/dialog';
+import { getUsersLikedPost } from '@/services/posts';
+import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import avatar from '@/assets/avatar.png';
+import { LikedPostUser } from '@/lib/types';
+import { QueryKeyFeed } from '@/lib/enum';
+import { useInView } from 'react-intersection-observer';
+import { useEffect } from 'react';
 
 interface LikeListModalProps {
   isOpen: boolean;
@@ -28,7 +28,7 @@ const LikeListModal = ({ isOpen, onClose, postId }: LikeListModalProps) => {
         const response = await getUsersLikedPost(
           postId,
           pageParam as number,
-          10
+          10,
         );
         return response;
       },
@@ -66,6 +66,7 @@ const LikeListModal = ({ isOpen, onClose, postId }: LikeListModalProps) => {
                     width={40}
                     height={40}
                     className="rounded-full"
+                    priority
                   />
                   <span>{like.username}</span>
                   <Button variant="outline" size="sm" className="ml-auto">

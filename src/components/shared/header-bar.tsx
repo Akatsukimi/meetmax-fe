@@ -47,7 +47,8 @@ const HeaderBar = () => {
             width={40}
             height={40}
             alt="avatar"
-            className="object-cover rounded aspect-[1/1]"
+            className="object-cover rounded"
+            priority
           />
         </div>
       </div>

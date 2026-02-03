@@ -1,16 +1,16 @@
-import Image from "next/image";
-import { Card } from "@/components/ui/card";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import avatar from "@/assets/avatar.png";
-import { cn } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
-import { Cake, SendHorizontal } from "lucide-react";
+import Image from 'next/image';
+import { Card } from '@/components/ui/card';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import avatar from '@/assets/avatar.png';
+import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+import { Cake, SendHorizontal } from 'lucide-react';
 
 export default function Suggestion({ className }: { className?: string }) {
   return (
-    <div className={cn("space-y-7.5", className)}>
+    <div className={cn('space-y-7.5', className)}>
       <Card className="p-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">You Might Like</h3>
@@ -27,6 +27,7 @@ export default function Suggestion({ className }: { className?: string }) {
               width={50}
               height={50}
               className="rounded-full"
+              priority
             />
             <div>
               <h3 className="font-semibold">Radovan SkillArena</h3>
@@ -53,7 +54,7 @@ export default function Suggestion({ className }: { className?: string }) {
         </div>
         <Separator className="mt-3 mb-5" />
         <div className="flex justify-between gap-5 mb-3.5">
-          <Image src={avatar} alt="avatar" width={50} height={50} />
+          <Image src={avatar} alt="avatar" width={50} height={50} priority />
           <div className="flex-1 flex flex-col">
             <span className="text-base font-medium">Donald Trump</span>
             <span className="text-xs text-muted-foreground">

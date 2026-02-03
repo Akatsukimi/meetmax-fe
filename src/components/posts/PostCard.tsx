@@ -63,6 +63,7 @@ const PostCard = ({ post, user }: PostCardProps) => {
           width={50}
           height={50}
           className="rounded-full aspect-[1/1] object-cover"
+          priority
         />
 
         <div className="flex items-center justify-between">

@@ -224,6 +224,7 @@ export default function PhotoUploadModal({
                 height={500}
                 style={{ transform: `scale(${scale}) rotate(${rotate}deg)` }}
                 onLoad={onImageLoad}
+                priority
               />
             </ReactCrop>
           </>

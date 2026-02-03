@@ -120,6 +120,7 @@ const PostEditor = () => {
             className="rounded-full mr-3 aspect-[1/1]"
             width={40}
             height={40}
+            priority
           />
           <Input
             type="text"

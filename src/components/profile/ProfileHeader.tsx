@@ -50,6 +50,7 @@ export default function ProfileHeader({ profile }: ProfileHeaderProps) {
                 width={104}
                 height={104}
                 className="object-cover aspect-[1/1] rounded-full shadow"
+                priority
               />
             </div>
           </PopoverTrigger>
