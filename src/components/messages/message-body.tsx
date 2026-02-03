@@ -17,14 +17,14 @@ interface IMessageBodyProps {
   user: User;
   onReplyClick: (message: ConversationMessage | GroupMessage) => void;
   onEditClick: (message: ConversationMessage | GroupMessage) => void;
-  isRecipientTyping: boolean;
+  typingUsers: User[];
 }
 
 const MessageBody = ({
   messages,
   user,
   onReplyClick,
-  isRecipientTyping,
+  typingUsers,
   onEditClick,
 }: IMessageBodyProps) => {
   const params = useParams<{ conversationId?: string; groupId?: string }>();
@@ -108,16 +108,22 @@ const MessageBody = ({
     }
   };
 
-  const groupMessagesByDate = messages?.reduce((groups, message) => {
-    if (!message) return groups;
-    const date = new Date(message.createdAt);
-    const dateKey = format(date, 'yyyy-MM-dd HH:00');
-    if (!groups[dateKey]) {
-      groups[dateKey] = { time: message.createdAt, messages: [] };
-    }
-    groups[dateKey].messages.push(message);
-    return groups;
-  }, {} as Record<string, { time: string; messages: (ConversationMessage | GroupMessage)[] }>);
+  const groupMessagesByDate = messages?.reduce(
+    (groups, message) => {
+      if (!message) return groups;
+      const date = new Date(message.createdAt);
+      const dateKey = format(date, 'yyyy-MM-dd HH:00');
+      if (!groups[dateKey]) {
+        groups[dateKey] = { time: message.createdAt, messages: [] };
+      }
+      groups[dateKey].messages.push(message);
+      return groups;
+    },
+    {} as Record<
+      string,
+      { time: string; messages: (ConversationMessage | GroupMessage)[] }
+    >,
+  );
 
   return (
     <ScrollArea scrollToBottom={true} className="flex-1 px-4.5 py-2">
@@ -135,7 +141,9 @@ const MessageBody = ({
           key={dateKey}
         />
       ))}
-      {isRecipientTyping && <MessageTyping user={user} />}
+      {typingUsers?.map((typingUser) => (
+        <MessageTyping key={typingUser.id} user={typingUser} />
+      ))}
     </ScrollArea>
   );
 };

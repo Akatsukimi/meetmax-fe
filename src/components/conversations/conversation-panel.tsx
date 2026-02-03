@@ -9,7 +9,7 @@ import MessageBody from '@/components/messages/message-body';
 import { useParams } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getConversationMessages } from '@/services/conversations';
-import { Conversation, GroupMessage, Message } from '@/lib/types';
+import { Conversation, GroupMessage, Message, User } from '@/lib/types';
 import { formatConversationMessages } from '@/lib/format';
 import { useSocket } from '@/providers/socket-provider';
 
@@ -26,7 +26,7 @@ const ConversationPanel = () => {
   }>({ isRelying: false, message: null });
   const socket = useSocket();
   const queryClient = useQueryClient();
-  const [isRecipientTyping, setIsRecipientTyping] = useState(false);
+  const [typingUsers, setTypingUsers] = useState<User[]>([]);
   const {
     data: conversationMessages,
     isLoading: isConversationMessagesLoading,
@@ -49,14 +49,25 @@ const ConversationPanel = () => {
     socket.on('userLeave', () => {
       console.log('userLeave');
     });
-    socket.on('onTypingStart', () => {
-      console.log('onTypingStart: User has started typing...');
-      setIsRecipientTyping(true);
-    });
-    socket.on('onTypingStop', () => {
-      console.log('onTypingStop: User has stopped typing...');
-      setIsRecipientTyping(false);
-    });
+    socket.on(
+      'onTypingStart',
+      (data: { user: User; conversationId: string }) => {
+        if (data.user && data.user.id !== user!.id) {
+          setTypingUsers((prev) => {
+            if (prev.some((u) => u.id === data.user.id)) return prev;
+            return [...prev, data.user];
+          });
+        }
+      },
+    );
+    socket.on(
+      'onTypingStop',
+      (data: { user: User; conversationId: string }) => {
+        if (data.user) {
+          setTypingUsers((prev) => prev.filter((u) => u.id !== data.user.id));
+        }
+      },
+    );
     socket.on('onMessageUpdate', (message) => {
       console.log('onMessageUpdate received');
       console.log(message);
@@ -72,7 +83,7 @@ const ConversationPanel = () => {
       socket.off('onTypingStop');
       socket.off('onMessageUpdate');
     };
-  }, [params.conversationId, socket]);
+  }, [params.conversationId, socket, user]);
 
   let typingTimeout: NodeJS.Timeout | null = null;
 
@@ -127,7 +138,7 @@ const ConversationPanel = () => {
         </div>
       ) : (
         <MessageBody
-          isRecipientTyping={isRecipientTyping}
+          typingUsers={typingUsers}
           messages={formatConversationMessages(
             conversationMessages,
             params.conversationId,

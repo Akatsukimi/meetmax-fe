@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import { useAuth } from '@/providers/auth-provider';
 import { useState, useEffect } from 'react';
-import { Group, GroupMessage, Message } from '@/lib/types';
+import { Group, GroupMessage, Message, User } from '@/lib/types';
 import { useSocket } from '@/providers/socket-provider';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Separator } from '@/components/ui/separator';
@@ -26,7 +26,7 @@ const GroupPanel = () => {
   }>({ isEditing: false, message: null });
   const socket = useSocket();
   const queryClient = useQueryClient();
-  const [isRecipientTyping, setIsRecipientTyping] = useState(false);
+  const [typingUsers, setTypingUsers] = useState<User[]>([]);
   const { data: groupMessages, isLoading: isGroupMessagesLoading } = useQuery({
     queryKey: ['group-messages', params.groupId],
     queryFn: () => getGroupMessages(params.groupId),
@@ -50,13 +50,18 @@ const GroupPanel = () => {
 
   useEffect(() => {
     socket.emit('onGroupJoin', { groupId: params.groupId });
-    socket.on('onTypingStart', () => {
-      console.log('onTypingStart: User has started typing...');
-      setIsRecipientTyping(true);
+    socket.on('onTypingStart', (data: { user: User; groupId: string }) => {
+      if (data.user && data.user.id !== user!.id) {
+        setTypingUsers((prev) => {
+          if (prev.some((u) => u.id === data.user.id)) return prev;
+          return [...prev, data.user];
+        });
+      }
     });
-    socket.on('onTypingStop', () => {
-      console.log('onTypingStop: User has stopped typing...');
-      setIsRecipientTyping(false);
+    socket.on('onTypingStop', (data: { user: User; groupId: string }) => {
+      if (data.user) {
+        setTypingUsers((prev) => prev.filter((u) => u.id !== data.user.id));
+      }
     });
 
     return () => {
@@ -97,7 +102,7 @@ const GroupPanel = () => {
         </div>
       ) : (
         <MessageBody
-          isRecipientTyping={isRecipientTyping}
+          typingUsers={typingUsers}
           messages={formatGroupMessages(groupMessages, params.groupId)}
           user={user}
           onReplyClick={handleReplyClick}
